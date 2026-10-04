@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep the storefront catalog data isolated from presentation so Shopify content can replace demo products without changing the page structure.
+- Use Shopify Storefront API cart mutations as the only purchase path so inventory, variants, and checkout stay authoritative.
