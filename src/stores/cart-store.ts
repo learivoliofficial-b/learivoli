@@ -118,7 +118,7 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: "lien-ravel-shopify-cart",
+      name: "lea-rivoli-shopify-cart",
       storage: createJSONStorage(() => localStorage),
       partialize: ({ items, cartId, checkoutUrl }) => ({ items, cartId, checkoutUrl }),
       onRehydrateStorage: () => (state) => state?.setHydrated(),

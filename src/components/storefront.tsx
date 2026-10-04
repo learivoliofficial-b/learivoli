@@ -17,13 +17,13 @@ export function StoreHeader() {
   const count = useCartStore((state) => state.hydrated ? state.items.reduce((sum, item) => sum + item.quantity, 0) : 0);
   return (
     <>
-      <div className="bg-ink px-4 py-2 text-center text-[10px] font-semibold uppercase text-ink-foreground">Free shipping within Sweden</div>
+      <div className="bg-ink px-4 py-2 text-center text-[10px] font-semibold uppercase text-ink-foreground">Avenue Montaigne Hoodie — available now</div>
       <header className="sticky top-0 z-30 grid h-[76px] grid-cols-[1fr_auto_1fr] items-center border-b border-border bg-background/95 px-4 backdrop-blur md:px-9">
         <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase md:flex" aria-label="Main navigation">
           <Link to="/">Shop</Link><Link to="/product/$handle" params={{ handle: "avenue-montaigne-hoodie" }}>New arrival</Link>
         </nav>
         <div className="md:hidden"><IconButton label="Open menu" onClick={() => setMenuOpen(true)}><Menu strokeWidth={1.5} /></IconButton></div>
-        <Link to="/" aria-label="Lien Ravel home" className="block w-32 md:w-40"><img src={logo.url} alt="Lien Ravel" className="h-auto w-full" /></Link>
+        <Link to="/" aria-label="Léa Rivoli home" className="block w-32 md:w-40"><img src={logo.url} alt="Léa Rivoli" className="h-auto w-full" /></Link>
         <div className="flex justify-end gap-1"><IconButton label="Search"><Search strokeWidth={1.5} /></IconButton><div className="relative"><IconButton label="Open cart" onClick={() => setCartOpen(true)}><ShoppingBag strokeWidth={1.5} /></IconButton>{count > 0 && <span className="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-brand text-[9px] text-brand-foreground">{count}</span>}</div></div>
       </header>
       {(menuOpen || cartOpen) && <Button variant="ghost" aria-label="Close overlay" className="fixed inset-0 z-40 h-auto w-auto rounded-none bg-overlay hover:bg-overlay" onClick={() => { setMenuOpen(false); setCartOpen(false); }} />}
@@ -58,5 +58,5 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 }
 
 export function StoreFooter() {
-  return <footer className="grid gap-12 border-t border-border px-6 py-14 text-[11px] uppercase md:grid-cols-3 md:px-10"><div><img src={logo.url} alt="Lien Ravel" className="w-36" /><p className="mt-5 max-w-xs normal-case leading-5 text-muted-foreground">Designed with intention. Built for everyday wear.</p></div><div className="grid content-start gap-3"><span>Customer care</span><a href="mailto:contact@lienravel.com" className="text-muted-foreground">Contact</a><span className="text-muted-foreground">Shipping & returns</span><span className="text-muted-foreground">Size guide</span></div><div><span>Newsletter</span><div className="mt-4 flex border-b border-foreground"><input aria-label="Email address" type="email" placeholder="EMAIL ADDRESS" className="h-10 min-w-0 flex-1 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"/><Button variant="ghost" className="rounded-none px-2 text-[10px] font-semibold uppercase">Join</Button></div></div></footer>;
+  return <footer className="grid gap-12 border-t border-border px-6 py-14 text-[11px] uppercase md:grid-cols-3 md:px-10"><div><img src={logo.url} alt="Léa Rivoli" className="w-36" /><p className="mt-5 max-w-xs normal-case leading-5 text-muted-foreground">Avenue Montaigne, Paris.</p></div><div className="grid content-start gap-3"><span>Customer care</span><span className="text-muted-foreground">Contact</span><span className="text-muted-foreground">Shipping & returns</span><span className="text-muted-foreground">Size guide</span></div><div><span>Newsletter</span><div className="mt-4 flex border-b border-foreground"><input aria-label="Email address" type="email" placeholder="EMAIL ADDRESS" className="h-10 min-w-0 flex-1 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"/><Button variant="ghost" className="rounded-none px-2 text-[10px] font-semibold uppercase">Join</Button></div></div></footer>;
 }

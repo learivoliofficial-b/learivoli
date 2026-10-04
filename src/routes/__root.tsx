@@ -78,9 +78,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lien Ravel" },
-      { name: "description", content: "Lien Ravel official store." },
-      { name: "author", content: "Lien Ravel" },
+      { title: "Léa Rivoli" },
+      { name: "description", content: "Léa Rivoli official store." },
+      { name: "author", content: "Léa Rivoli" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

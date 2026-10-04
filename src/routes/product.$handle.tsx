@@ -14,8 +14,8 @@ export const Route = createFileRoute("/product/$handle")({
     return product;
   },
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.title} — Lien Ravel` : "Product unavailable — Lien Ravel";
-    const description = loaderData?.description.slice(0, 160) ?? "This Lien Ravel product is unavailable.";
+    const title = loaderData ? `${loaderData.title} — Léa Rivoli` : "Product unavailable — Léa Rivoli";
+    const description = loaderData?.description.slice(0, 160) ?? "This Léa Rivoli product is unavailable.";
     const image = loaderData?.images.edges[0]?.node.url;
     return { meta: [
       { title }, { name: "description", content: description },
