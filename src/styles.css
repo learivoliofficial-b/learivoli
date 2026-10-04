@@ -20,7 +20,7 @@
 
 @theme inline {
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
+  --font-serif: "Times New Roman", Times, serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -106,8 +106,8 @@
   --sidebar-ring: oklch(0.704 0.04 256.788);
   --ink: oklch(0.13 0.025 260);
   --ink-foreground: oklch(0.98 0.002 75);
-  --brand: oklch(0.39 0.18 265);
-  --brand-foreground: oklch(0.98 0.002 75);
+  --brand: oklch(0.13 0.01 255);
+  --brand-foreground: oklch(0.985 0.002 75);
   --image-foreground: oklch(0.99 0 0);
   --image-shade: oklch(0 0 0 / 0.14);
   --overlay: oklch(0 0 0 / 0.48);
