@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import brandLogo from "@/assets/logowithslogo-2.png.asset.json";
 import logo from "@/assets/biggerlog.png.asset.json";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -99,8 +100,7 @@ function ProductPage() {
       <div className="mx-auto max-w-2xl px-6 py-16 text-center md:py-24">
         <h2 className="text-4xl uppercase md:text-5xl">Our Story</h2>
         <p className="mx-auto mt-5 max-w-xl font-serif text-base italic leading-7 text-muted-foreground">Life is not measured by what we have, but by what we remember. The places we discover, the people we meet, the moments we never want to forget. Léa Rivoli was created as a reminder to slow down, look around, and appreciate the beauty of simply being here. Because perhaps the finest things in life are not things at all. L’ART DE VIVRE.</p>
-        <img src={logo.url} alt="Léa Rivoli" className="mx-auto mt-14 w-52" />
-        <p className="mt-2 text-xs font-bold uppercase">L’Art de vivre.</p>
+        <img src={brandLogo.url} alt="Léa Rivoli — L’Art de vivre." className="mx-auto mt-12 w-72 md:w-96" />
       </div>
     </section>
     <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
