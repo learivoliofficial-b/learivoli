@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductCard, SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
 import { getProducts } from "@/lib/shopify";
-import { getProducts } from "@/lib/shopify";
 
 export const Route = createFileRoute("/")({
   loader: () => getProducts(),
