@@ -5,14 +5,19 @@ import { getProducts } from "@/lib/shopify";
 
 export const Route = createFileRoute("/")({
   loader: () => getProducts(),
-  head: () => ({ meta: [
+  head: ({ loaderData }) => {
+    const lead = loaderData?.[0];
+    const image = (lead?.images.edges[1]?.node ?? lead?.images.edges[0]?.node)?.url;
+    return { meta: [
     { title: "Léa Rivoli — Official Store" },
     { name: "description", content: "Shop the latest Léa Rivoli collection." },
     { property: "og:title", content: "Léa Rivoli — Official Store" },
     { property: "og:description", content: "Shop the latest Léa Rivoli collection." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
-  ] }),
+    ...(image?.startsWith("https://") ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
+  ] };
+  },
   component: Index,
 });
 

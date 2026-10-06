@@ -14,16 +14,23 @@ function IconButton({ label, children, onClick }: { label: string; children: Rea
 export function StoreHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const updateScroll = () => setScrolled(window.scrollY > 32);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    return () => window.removeEventListener("scroll", updateScroll);
+  }, []);
   const count = useCartStore((state) => state.hydrated ? state.items.reduce((sum, item) => sum + item.quantity, 0) : 0);
   return (
     <>
       <div className="bg-ink px-4 py-2 text-center text-[10px] font-semibold uppercase text-ink-foreground">Avenue Montaigne Hoodie — available now</div>
-      <header className="sticky top-0 z-30 grid h-[76px] grid-cols-[1fr_auto_1fr] items-center border-b border-border bg-background/95 px-4 backdrop-blur md:px-9">
+      <header className={`sticky top-0 z-30 grid h-[76px] grid-cols-[1fr_auto_1fr] items-center border-b px-4 transition-[background-color,border-color] duration-500 ease-out md:px-9 ${scrolled ? "border-transparent bg-transparent" : "border-border bg-background/95"}`}>
         <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase md:flex" aria-label="Main navigation">
           <Link to="/">Shop</Link><Link to="/product/$handle" params={{ handle: "avenue-montaigne-hoodie" }}>New arrival</Link>
         </nav>
         <div className="md:hidden"><IconButton label="Open menu" onClick={() => setMenuOpen(true)}><Menu strokeWidth={1.5} /></IconButton></div>
-        <Link to="/" aria-label="Léa Rivoli home" className="block w-32 md:w-40"><img src={logo.url} alt="Léa Rivoli" className="h-auto w-full" /></Link>
+        <Link to="/" aria-label="Léa Rivoli home" className={`block w-32 origin-center transition-transform duration-500 ease-out md:w-40 ${scrolled ? "scale-90" : "scale-100"}`}><img src={logo.url} alt="Léa Rivoli" className="h-auto w-full" /></Link>
         <div className="flex justify-end gap-1"><IconButton label="Search"><Search strokeWidth={1.5} /></IconButton><div className="relative"><IconButton label="Open cart" onClick={() => setCartOpen(true)}><ShoppingBag strokeWidth={1.5} /></IconButton>{count > 0 && <span className="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-brand text-[9px] text-brand-foreground">{count}</span>}</div></div>
       </header>
       {(menuOpen || cartOpen) && <Button variant="ghost" aria-label="Close overlay" className="fixed inset-0 z-40 h-auto w-auto rounded-none bg-overlay hover:bg-overlay" onClick={() => { setMenuOpen(false); setCartOpen(false); }} />}
