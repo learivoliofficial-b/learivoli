@@ -1,11 +1,69 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Search, ShoppingBag, Trash2, X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight, Menu, Minus, Plus, Search, ShoppingBag, Trash2, X } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import ugcChalet from "@/assets/ugc-chalet.webp.asset.json";
+import ugcStreet from "@/assets/ugc-street.png.asset.json";
+import ugcSubway from "@/assets/ugc-subway.png.asset.json";
 import logo from "@/assets/biggerlog.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
+
+const socialImages = [
+  { src: ugcStreet.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn on the street in Paris" },
+  { src: ugcSubway.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the subway" },
+  { src: ugcChalet.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the mountains" },
+];
+
+export function SocialProofCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const updateActive = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const max = track.scrollWidth - track.clientWidth;
+    setActive(max <= 0 ? 0 : Math.round((track.scrollLeft / max) * (socialImages.length - 1)));
+  };
+
+  const scrollBy = (direction: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: "smooth" });
+  };
+
+  return (
+    <section className="border-t border-border">
+      <div className="flex items-end justify-between px-4 py-7 md:px-9">
+        <h2 className="text-sm font-semibold uppercase">Worn by you</h2>
+        <span className="text-[10px] uppercase text-muted-foreground">@lea.rivoli</span>
+      </div>
+      <div className="relative">
+        <div ref={trackRef} onScroll={updateActive} className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto">
+          {socialImages.map((image) => (
+            <figure key={image.src} className="w-[82%] shrink-0 snap-center px-1 sm:w-[46%] lg:w-[31%]">
+              <div className="aspect-[3/4] overflow-hidden bg-muted">
+                <img src={image.src} alt={image.alt} loading="lazy" className="size-full object-cover" />
+              </div>
+            </figure>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center pl-2 lg:flex">
+          <Button variant="ghost" size="icon" aria-label="Previous image" className="pointer-events-auto bg-background/80 hover:bg-background" onClick={() => scrollBy(-1)}><ChevronLeft /></Button>
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center pr-2 lg:flex">
+          <Button variant="ghost" size="icon" aria-label="Next image" className="pointer-events-auto bg-background/80 hover:bg-background" onClick={() => scrollBy(1)}><ChevronRight /></Button>
+        </div>
+      </div>
+      <div className="flex items-center justify-center gap-2 py-6">
+        {socialImages.map((image, index) => (
+          <button key={image.src} type="button" aria-label={`Go to image ${index + 1}`} onClick={() => { const track = trackRef.current; if (track) track.scrollTo({ left: (index * track.scrollWidth) / socialImages.length, behavior: "smooth" }); }} className={`size-1.5 rounded-full transition-colors ${index === active ? "bg-foreground" : "bg-border"}`} />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function IconButton({ label, children, onClick }: { label: string; children: ReactNode; onClick?: () => void }) {
   return <Button type="button" variant="ghost" size="icon" aria-label={label} title={label} onClick={onClick}>{children}</Button>;
