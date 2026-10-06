@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import logo from "@/assets/biggerlog.png.asset.json";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
@@ -34,8 +34,18 @@ function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const mobileGalleryRef = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState("");
+  const inlineButtonRef = useRef<HTMLButtonElement>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
   const isLoading = useCartStore((state) => state.isLoading);
+
+  useEffect(() => {
+    const button = inlineButtonRef.current;
+    if (!button || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver((entries) => setShowStickyBar(!entries[0]?.isIntersecting), { threshold: 0 });
+    observer.observe(button);
+    return () => observer.disconnect();
+  }, []);
   const variant = useMemo(() => product.variants.edges.map(({ node }) => node).find((entry) => entry.selectedOptions.every((option) => selected[option.name] === option.value)), [product, selected]);
   const images = product.images.edges.map(({ node }) => node);
 
@@ -62,7 +72,7 @@ function ProductPage() {
     setNotice(added ? "Added to your cart." : "Could not add this item. Please try again.");
   };
 
-  return <main className="min-h-screen bg-background text-foreground"><StoreHeader />
+  return <main className="min-h-screen bg-background pb-20 text-foreground lg:pb-0"><StoreHeader />
     <div className="grid lg:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.75fr)]">
       <div>
         <div ref={mobileGalleryRef} className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden" onScroll={(event) => { const width = event.currentTarget.clientWidth; if (width) setActiveImage(Math.round(event.currentTarget.scrollLeft / width)); }}>
@@ -80,7 +90,7 @@ function ProductPage() {
           {sizeOptions && <fieldset><legend className="mb-3 text-[10px] font-semibold uppercase">Size: <span className="font-normal text-muted-foreground">{selected[sizeOptions.name]}</span></legend><div className="flex flex-wrap gap-2">{sizeOptions.values.map((size) => { const isSelected = selected[sizeOptions.name] === size; return <Button key={size} type="button" variant="outline" aria-pressed={isSelected} className={`size-12 rounded-none border bg-background p-0 uppercase shadow-none ${isSelected ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-border hover:border-foreground hover:bg-background"}`} onClick={() => setSelected((current) => ({ ...current, [sizeOptions.name]: size }))}>{size}</Button>; })}</div></fieldset>}
           {otherOptions.map((option) => <fieldset key={option.name}><legend className="mb-3 text-[10px] font-semibold uppercase">{option.name}: <span className="font-normal text-muted-foreground">{selected[option.name]}</span></legend><div className="flex flex-wrap gap-2">{option.values.map((value) => <Button key={value} type="button" variant={selected[option.name] === value ? "default" : "outline"} className="min-w-14 rounded-none uppercase" onClick={() => setSelected((current) => ({ ...current, [option.name]: value }))}>{value}</Button>)}</div></fieldset>)}
         </div>
-        <Button className="mt-9 h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>{notice && <p className="mt-3 text-center text-xs" role="status">{notice}</p>}
+        <Button ref={inlineButtonRef} className="mt-9 h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>{notice && <p className="mt-3 text-center text-xs" role="status">{notice}</p>}
         <Accordion type="single" collapsible className="mt-9 border-t border-border"><AccordionItem value="description"><AccordionTrigger className="text-[10px] uppercase">Description</AccordionTrigger><AccordionContent><div className="product-description space-y-3 text-xs leading-6 text-muted-foreground" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} /></AccordionContent></AccordionItem><AccordionItem value="shipping"><AccordionTrigger className="text-[10px] uppercase">Shipping & returns</AccordionTrigger><AccordionContent><p className="text-xs leading-6 text-muted-foreground">Shipping rates and delivery estimates are shown at checkout. Returns are accepted according to the store's current return policy.</p></AccordionContent></AccordionItem></Accordion>
       </section>
     </div>
@@ -93,6 +103,11 @@ function ProductPage() {
         <p className="mt-2 text-xs font-bold uppercase">L’Art de vivre.</p>
       </div>
     </section>
+    <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
+      <div className="px-4">
+        <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? <>Add to cart — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
+      </div>
+    </div>
     <StoreFooter />
   </main>;
 }
