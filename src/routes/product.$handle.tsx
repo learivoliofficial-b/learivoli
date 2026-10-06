@@ -42,7 +42,7 @@ function ProductPage() {
   useEffect(() => {
     const button = inlineButtonRef.current;
     if (!button || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), { threshold: 0 });
+    const observer = new IntersectionObserver((entries) => setShowStickyBar(!entries[0]?.isIntersecting), { threshold: 0 });
     observer.observe(button);
     return () => observer.disconnect();
   }, []);
