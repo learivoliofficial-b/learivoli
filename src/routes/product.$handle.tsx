@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import logo from "@/assets/biggerlog.png.asset.json";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
@@ -34,8 +34,18 @@ function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const mobileGalleryRef = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState("");
+  const inlineButtonRef = useRef<HTMLButtonElement>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
   const isLoading = useCartStore((state) => state.isLoading);
+
+  useEffect(() => {
+    const button = inlineButtonRef.current;
+    if (!button || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), { threshold: 0 });
+    observer.observe(button);
+    return () => observer.disconnect();
+  }, []);
   const variant = useMemo(() => product.variants.edges.map(({ node }) => node).find((entry) => entry.selectedOptions.every((option) => selected[option.name] === option.value)), [product, selected]);
   const images = product.images.edges.map(({ node }) => node);
 
