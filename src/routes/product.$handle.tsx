@@ -103,6 +103,11 @@ function ProductPage() {
         <p className="mt-2 text-xs font-bold uppercase">L’Art de vivre.</p>
       </div>
     </section>
+    <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
+      <div className="px-4">
+        <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? <>Add to cart — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
+      </div>
+    </div>
     <StoreFooter />
   </main>;
 }
