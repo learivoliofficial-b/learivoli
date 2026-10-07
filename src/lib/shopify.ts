@@ -64,19 +64,30 @@ const PRODUCT_FIELDS = `
   } } }
 `;
 
-export async function getProducts() {
-  const data = await storefrontApiRequest<{ products: { edges: Array<{ node: ShopifyProduct }> } }>(
-    `query StoreProducts { products(first: 50) { edges { node { ${PRODUCT_FIELDS} } } } }`,
-  );
-  return data.products.edges.map(({ node }) => node);
+export async function getProducts(): Promise<ShopifyProduct[]> {
+  try {
+    const data = await storefrontApiRequest<{ products: { edges: Array<{ node: ShopifyProduct }> } }>(
+      `query StoreProducts { products(first: 50) { edges { node { ${PRODUCT_FIELDS} } } } }`,
+    );
+    return data.products.edges.map(({ node }) => node);
+  } catch (error) {
+    // 402 = Shopify store has no active plan; keep the site up instead of a blank screen.
+    console.warn("Shopify products unavailable", error);
+    return [];
+  }
 }
 
-export async function getProductByHandle(handle: string) {
-  const data = await storefrontApiRequest<{ product: ShopifyProduct | null }>(
-    `query ProductByHandle($handle: String!) { product(handle: $handle) { ${PRODUCT_FIELDS} } }`,
-    { handle },
-  );
-  return data.product;
+export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
+  try {
+    const data = await storefrontApiRequest<{ product: ShopifyProduct | null }>(
+      `query ProductByHandle($handle: String!) { product(handle: $handle) { ${PRODUCT_FIELDS} } }`,
+      { handle },
+    );
+    return data.product;
+  } catch (error) {
+    console.warn("Shopify product unavailable", error);
+    return null;
+  }
 }
 
 export function formatMoney(amount: string, currencyCode: string) {
