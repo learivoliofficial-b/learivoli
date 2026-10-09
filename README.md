@@ -1,14 +1,21 @@
-# Welcome to your Lovable project
+# Shopify Site Replica
+
+om jag behöver en webiste till mitt clothing brand för shopify, och jag har hittat en hemsida, kan jag få länka den till dig och att du gör en samma hemsida fast med mina bilder osv
+brokenoslo.com
+grejen är, att jag vill kunna ändra bilder text o sånt på shopify, men ha samma struktur osv som brokenoslo
+jag vill ju att du ska skapa en typ exakt samma sida som brokenoslo, men att jag kan ändra den osv
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://learivoli.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/5992c770-467b-47d1-8020-111c76c898bd).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +27,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
