@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import brandLogo from "@/assets/logowithslogo-2.png.asset.json";
+import brandLogo from "@/assets/logowithslogo-2.png";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";

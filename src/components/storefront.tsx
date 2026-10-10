@@ -2,10 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Minus, Plus, Search, ShoppingBag, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import ugcChalet from "@/assets/ugc-chalet.webp.asset.json";
-import ugcStreet from "@/assets/ugc-street.png.asset.json";
-import ugcSubway from "@/assets/ugc-subway.png.asset.json";
-import logo from "@/assets/biggerlog.png.asset.json";
+import ugcChalet from "@/assets/ugc-chalet.webp";
+import ugcStreet from "@/assets/ugc-street.png";
+import ugcSubway from "@/assets/ugc-subway.png";
+import logo from "@/assets/biggerlog.png";
 import { Button } from "@/components/ui/button";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
