@@ -11,9 +11,9 @@ import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
 
 const socialImages = [
-  { src: ugcStreet.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn on the street in Paris" },
-  { src: ugcSubway.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the subway" },
-  { src: ugcChalet.url, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the mountains" },
+  { src: ugcStreet, alt: "Léa Rivoli Avenue Montaigne hoodie worn on the street in Paris" },
+  { src: ugcSubway, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the subway" },
+  { src: ugcChalet, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the mountains" },
 ];
 
 export function SocialProofCarousel() {
@@ -88,7 +88,7 @@ export function StoreHeader() {
           <Link to="/">Shop</Link><Link to="/product/$handle" params={{ handle: "avenue-montaigne-hoodie" }}>New arrival</Link>
         </nav>
         <div className="md:hidden"><IconButton label="Open menu" onClick={() => setMenuOpen(true)}><Menu strokeWidth={1.5} /></IconButton></div>
-        <Link to="/" aria-label="Léa Rivoli home" className={`block w-32 origin-center transition-transform duration-500 ease-out md:w-40 ${scrolled ? "scale-90" : "scale-100"}`}><img src={logo.url} alt="Léa Rivoli" className="h-auto w-full" /></Link>
+        <Link to="/" aria-label="Léa Rivoli home" className={`block w-32 origin-center transition-transform duration-500 ease-out md:w-40 ${scrolled ? "scale-90" : "scale-100"}`}><img src={logo} alt="Léa Rivoli" className="h-auto w-full" /></Link>
         <div className="flex justify-end gap-1"><IconButton label="Search"><Search strokeWidth={1.5} /></IconButton><div className="relative"><IconButton label="Open cart" onClick={() => setCartOpen(true)}><ShoppingBag strokeWidth={1.5} /></IconButton>{count > 0 && <span className="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-brand text-[9px] text-brand-foreground">{count}</span>}</div></div>
       </header>
       {(menuOpen || cartOpen) && <Button variant="ghost" aria-label="Close overlay" className="fixed inset-0 z-40 h-auto w-auto rounded-none bg-overlay hover:bg-overlay" onClick={() => { setMenuOpen(false); setCartOpen(false); }} />}
