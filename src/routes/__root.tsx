@@ -91,6 +91,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+      scripts: [
+      {
+        src: "https://www.googletagmanager.com/gtag/js?id=G-EXG418KGWT",
+        async: true,
+      },
+      {
+        children: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-EXG418KGWT');
+        `,
+      },
+    ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
