@@ -3,7 +3,7 @@ import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import brandLogo from "@/assets/logowithslogo-2.png";
-import { StoreFooter, StoreHeader } from "@/components/storefront";
+import { SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
 import { Button } from "@/components/ui/button";
 import { pickRailImages, RAIL_SIDE_TAG } from "@/lib/rail";
 import { formatMoney, getProductByHandle } from "@/lib/shopify";
@@ -32,8 +32,6 @@ export const Route = createFileRoute("/product/$handle")({
 function ProductPage() {
   const product = Route.useLoaderData();
   const [selected, setSelected] = useState<Record<string,string>>(() => Object.fromEntries(product.options.map((option) => [option.name, option.values[0] ?? ""])));
-  const [activeImage, setActiveImage] = useState(0);
-  const mobileGalleryRef = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState("");
   const inlineButtonRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -61,12 +59,6 @@ function ProductPage() {
     return [color, matchingProductImage ?? matchingVariant?.image ?? images[colorKey === "navy" ? 0 : 3] ?? images[0]];
   })), [colorOptions, images, product.variants.edges]);
 
-  const scrollToImage = (index: number) => {
-    const gallery = mobileGalleryRef.current;
-    if (!gallery) return;
-    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: "smooth" });
-  };
-
   const handleAdd = async () => {
     if (!variant) return;
     setNotice("");
@@ -75,7 +67,6 @@ function ProductPage() {
   };
 
   const showcase = [frontImage, ...images.filter((image) => image !== frontImage && !image.altText?.toLowerCase().includes(RAIL_SIDE_TAG))].filter((image): image is NonNullable<typeof image> => Boolean(image));
-  const shown = showcase[activeImage] ?? showcase[0];
   const price = variant ? formatMoney(variant.price.amount, variant.price.currencyCode) : formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
 
   const colorPicker = colorOptions && <fieldset><legend className="mb-2 text-[9px] font-semibold uppercase">Color: <span className="font-normal text-muted-foreground">{selected[colorOptions.name]}</span></legend><div className="flex flex-wrap gap-2 lg:justify-end">{colorOptions.values.map((color) => { const image = colorImages[color]; const isSelected = selected[colorOptions.name] === color; return <Button key={color} type="button" variant="ghost" aria-label={`Select ${color}`} aria-pressed={isSelected} className="h-auto w-12 rounded-none p-0 hover:bg-transparent" onClick={() => setSelected((current) => ({ ...current, [colorOptions.name]: color }))}><span className={`block aspect-square w-full overflow-hidden border bg-muted ${isSelected ? "border-foreground ring-1 ring-foreground" : "border-border"}`}>{image && <img src={image.url} alt={`${color} ${product.title}`} className="size-full object-contain" />}</span></Button>; })}</div></fieldset>;
@@ -84,30 +75,28 @@ function ProductPage() {
   const addButton = <Button ref={inlineButtonRef} className="h-11 w-full rounded-none text-[10px] uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}><ShoppingBag className="size-3.5" />{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>;
 
   return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
-    <section className="relative flex flex-col lg:grid lg:h-[calc(100svh-107px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:px-12">
-      {/* Left: back, title, description */}
-      <div className="order-2 min-w-0 px-5 pt-6 lg:order-none lg:self-center lg:px-0 lg:pt-0">
-        <Link to="/" className="hidden items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground lg:inline-flex"><ChevronLeft className="size-3" />Back</Link>
-        <h1 className="text-lg font-semibold uppercase leading-tight lg:mt-4 lg:max-w-xs lg:text-xl">{product.title}</h1>
-        <p className="mt-1 text-sm lg:hidden">{price}</p>
-        <p className="mt-4 hidden max-w-xs overflow-hidden whitespace-pre-line break-words text-[11px] leading-5 text-muted-foreground lg:line-clamp-[12]">{product.description}</p>
+    <section className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-8 lg:px-12">
+      {/* Left: back, title, description — stays put while the images scroll */}
+      <div className="hidden lg:sticky lg:top-[107px] lg:flex lg:h-[calc(100svh-107px)] lg:min-w-0 lg:flex-col lg:justify-center">
+        <Link to="/" className="inline-flex items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground"><ChevronLeft className="size-3" />Back</Link>
+        <h1 className="mt-4 max-w-xs text-xl font-semibold uppercase leading-tight">{product.title}</h1>
+        <p className="mt-4 line-clamp-[12] max-w-xs overflow-hidden whitespace-pre-line break-words text-[11px] leading-5 text-muted-foreground">{product.description}</p>
       </div>
 
-      {/* Center: the garment */}
-      <div className="relative order-1 flex min-w-0 flex-col items-center lg:order-none lg:h-full lg:justify-center">
-        <Link to="/" aria-label="Back to the rail" className="absolute left-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-background/80 lg:hidden"><ChevronLeft className="size-4" /></Link>
-        <div ref={mobileGalleryRef} className="flex w-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden" onScroll={(event) => { const width = event.currentTarget.clientWidth; if (width) setActiveImage(Math.round(event.currentTarget.scrollLeft / width)); }}>
-          {showcase.map((image, index) => <div key={image.url} className="grid w-full shrink-0 snap-center place-items-center px-6 pt-6"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} className={`max-h-[56svh] w-auto object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
-        </div>
-        <div className="flex h-8 items-center justify-center gap-1.5 lg:hidden" aria-label={`Image ${activeImage + 1} of ${showcase.length}`}>
-          {showcase.map((image, index) => <button key={image.url} type="button" aria-label={`View image ${index + 1}`} onClick={() => scrollToImage(index)} className={`h-1.5 rounded-full transition-all ${activeImage === index ? "w-5 bg-foreground" : "w-1.5 bg-border"}`} />)}
-        </div>
-        {shown && <img key={shown.url} src={shown.url} alt={shown.altText ?? product.title} className="garment-drop hidden max-h-[72%] w-auto max-w-full object-contain brightness-[1.05] lg:block" />}
-        {showcase.length > 1 && <div className="mt-6 hidden gap-2 lg:flex">{showcase.map((image, index) => <button key={image.url} type="button" aria-label={`View image ${index + 1}`} onClick={() => setActiveImage(index)} className={`size-12 overflow-hidden border bg-background ${activeImage === index ? "border-foreground" : "border-border opacity-60 hover:opacity-100"}`}><img src={image.url} alt="" className="size-full object-contain brightness-[1.05]" /></button>)}</div>}
+      {/* Center: images stacked, scroll down to see more */}
+      <div className="hidden min-w-0 lg:block">
+        {showcase.map((image, index) => <div key={image.url} className="flex h-[calc(100svh-107px)] items-center justify-center"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} className={`max-h-[78%] w-auto max-w-full object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
       </div>
 
-      {/* Right: price, options, add to cart */}
-      <div className="order-3 space-y-5 px-5 pt-6 lg:order-none lg:ml-auto lg:w-full lg:max-w-[280px] lg:self-center lg:px-0 lg:pt-0 lg:text-right">
+      {/* Mobile: first image full square */}
+      <div className="relative lg:hidden">
+        <Link to="/" aria-label="Back to the rail" className="absolute left-3 top-3 z-10 grid size-9 place-items-center rounded-full bg-background/80"><ChevronLeft className="size-4" /></Link>
+        {showcase[0] && <div className="aspect-square w-full overflow-hidden"><img src={showcase[0].url} alt={showcase[0].altText ?? product.title} className="size-full scale-[1.18] object-cover" /></div>}
+      </div>
+
+      {/* Right: price, options, add to cart — stays put on desktop */}
+      <div className="space-y-5 px-5 pt-6 lg:sticky lg:top-[107px] lg:ml-auto lg:flex lg:h-[calc(100svh-107px)] lg:w-full lg:max-w-[280px] lg:flex-col lg:justify-center lg:space-y-5 lg:px-0 lg:pt-0 lg:text-right">
+        <div className="lg:hidden"><h1 className="text-lg font-semibold uppercase leading-tight">{product.title}</h1><p className="mt-1 text-sm">{price}</p></div>
         <p className="hidden text-sm lg:block">{price}</p>
         {colorPicker}
         {sizePicker}
@@ -116,8 +105,14 @@ function ProductPage() {
         {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
         <div className="product-description space-y-1 break-words text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
       </div>
+
+      {/* Mobile: remaining images stacked, each a full square */}
+      <div className="mt-8 grid gap-px lg:hidden">
+        {showcase.slice(1).map((image, index) => <img key={image.url} src={image.url} alt={image.altText ?? `${product.title} view ${index + 2}`} loading="lazy" className="aspect-square w-full object-cover" />)}
+      </div>
     </section>
-    <section className="mt-12 border-t border-border bg-background lg:mt-0">
+    <SocialProofCarousel />
+    <section className="border-t border-border bg-background">
       {images.at(-1) && <div className="mx-auto max-w-3xl"><img src={images.at(-1)?.url} alt={images.at(-1)?.altText ?? "The Léa Rivoli story"} className="aspect-[4/5] w-full object-cover" /></div>}
       <div className="mx-auto max-w-2xl px-6 py-16 text-center md:py-24">
         <h2 className="text-4xl uppercase md:text-5xl">Our Story</h2>
