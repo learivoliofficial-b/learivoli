@@ -97,7 +97,7 @@ function ProductPage() {
         <div ref={galleryRef} onScroll={onGalleryScroll} className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain">
           {showcase.map((image, index) => <div key={image.url} className="aspect-square w-full shrink-0 snap-center snap-always overflow-hidden"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} draggable={false} className={`size-full object-cover ${index === 0 ? "scale-[1.18]" : ""}`} /></div>)}
         </div>
-        {showcase.length > 1 && <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden>{showcase.map((image, index) => <span key={image.url} className={`h-1.5 rounded-full transition-all duration-300 ${index === slide ? "w-6 bg-foreground" : "w-1.5 bg-foreground/30"}`} />)}</div>}
+        {showcase.length > 1 && <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 justify-center gap-1.5 rounded-full bg-background/80 px-2 py-1.5" aria-hidden>{showcase.map((image, index) => <span key={image.url} className={`h-1.5 rounded-full transition-all duration-300 ${index === slide ? "w-6 bg-foreground" : "w-1.5 bg-foreground/30"}`} />)}</div>}
       </div>
 
       {/* Right: price, options, add to cart — stays put on desktop */}
