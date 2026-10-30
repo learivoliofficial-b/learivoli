@@ -19,10 +19,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   const [swaying, setSwaying] = useState<{ id: string; dir: 1 | -1; n: number } | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [leaving, setLeaving] = useState<string | null>(null);
-  const [isTouch, setIsTouch] = useState(false);
   const [page, setPage] = useState(0);
-
-  useEffect(() => { if (window.matchMedia("(pointer: coarse)").matches) setIsTouch(true); }, []);
 
   /** Starts a damped pendulum swing; dir = which way the garment is pushed first. */
   const sway = (id: string, dir: 1 | -1 = 1) => setSwaying((current) => ({ id, dir, n: (current?.n ?? 0) + 1 }));
@@ -54,9 +51,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
 
   return (
     <section aria-label="Clothing rail" className="flex min-h-0 flex-1 flex-col bg-rail [--g-h:min(52svh,440px)] md:[--g-h:min(56svh,560px)]">
-      <div className="flex shrink-0 items-center justify-center gap-3 pt-6 text-[9px] font-semibold uppercase tracking-[0.18em] md:pt-10 md:text-[10px]">
-        <span>New collection</span><span className="h-3 w-px bg-border" /><span className="text-muted-foreground">Léa Rivoli Paris</span>
-      </div>
+      <ParisClock />
 
       <div className="relative flex min-h-0 flex-1 flex-col justify-center">
         <div ref={trackRef} onScroll={onScroll} className="scrollbar-none snap-x snap-mandatory overflow-x-auto overflow-y-hidden md:snap-none">
@@ -91,7 +86,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                     <button
                       type="button"
                       aria-label={item.handle ? `${item.title}, ${item.price ?? ""}` : `${item.title}, coming soon`}
-                      onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setIsTouch(true); }}
+                      onPointerDown={(event) => { lastPointer.current = event.pointerType; }}
                       onPointerEnter={(event) => {
                         if (event.pointerType !== "mouse" || leaving) return;
                         setHovered(item.id);
@@ -161,8 +156,35 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
       <div className="grid shrink-0 justify-items-center gap-1.5 px-6 pb-6 text-center md:pb-10">
         <p className={`h-4 text-[11px] font-semibold uppercase transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current?.title}</p>
         <p className={`h-4 text-[10px] uppercase text-muted-foreground transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current ? current.price ?? "Coming soon" : ""}</p>
-        <p className="mt-1 font-mono text-[10px] text-muted-foreground">{isTouch ? "Tap to turn. Tap again to shop." : "Click to turn and shop."}</p>
       </div>
     </section>
+  );
+}
+
+/** "PARIS | FRIDAY, 30 OCTOBER 2026 | 14:22" in Paris time, kept live. */
+export function formatParisClock(date: Date) {
+  const part = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Paris", ...options }).format(date);
+  return {
+    day: `${part({ weekday: "long" })}, ${part({ day: "numeric", month: "long", year: "numeric" })}`.toUpperCase(),
+    time: part({ hour: "2-digit", minute: "2-digit", hour12: false }),
+  };
+}
+
+function ParisClock() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  const clock = now ? formatParisClock(now) : null;
+  return (
+    <div className="flex h-9 shrink-0 items-center justify-center gap-3 border-b border-border text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground md:h-11 md:gap-5 md:text-[11px]">
+      <span>Paris</span>
+      <span aria-hidden className="h-3.5 w-px bg-border" />
+      <time dateTime={now?.toISOString()} className={`transition-opacity duration-500 ${clock ? "opacity-100" : "opacity-0"}`}>{clock?.day ?? "\u00a0"}</time>
+      <span aria-hidden className="h-3.5 w-px bg-border" />
+      <span className={`tabular-nums transition-opacity duration-500 ${clock ? "opacity-100" : "opacity-0"}`}>{clock?.time ?? "00:00"}</span>
+    </div>
   );
 }

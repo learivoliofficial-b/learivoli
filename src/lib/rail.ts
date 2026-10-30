@@ -1,11 +1,11 @@
-import railCrewneckGreySide from "@/assets/rail-crewneck-grey-side.jpg";
-import railCrewneckGrey from "@/assets/rail-crewneck-grey.jpg";
-import railHoodieBlackSide from "@/assets/rail-hoodie-black-side.jpg";
-import railHoodieBlack from "@/assets/rail-hoodie-black.jpg";
-import railHoodieCreamSide from "@/assets/rail-hoodie-cream-side.jpg";
-import railHoodieCream from "@/assets/rail-hoodie-cream.jpg";
-import railTshirtWhiteSide from "@/assets/rail-tshirt-white-side.jpg";
-import railTshirtWhite from "@/assets/rail-tshirt-white.jpg";
+import railCrewneckGreySide from "@/assets/rail-crewneck-grey-side.webp";
+import railCrewneckGrey from "@/assets/rail-crewneck-grey.webp";
+import railHoodieBlackSide from "@/assets/rail-hoodie-black-side.webp";
+import railHoodieBlack from "@/assets/rail-hoodie-black.webp";
+import railHoodieCreamSide from "@/assets/rail-hoodie-cream-side.webp";
+import railHoodieCream from "@/assets/rail-hoodie-cream.webp";
+import railTshirtWhiteSide from "@/assets/rail-tshirt-white-side.webp";
+import railTshirtWhite from "@/assets/rail-tshirt-white.webp";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
 /** Alt text tags a Shopify product image needs to be used on the clothing rail. */
