@@ -16,14 +16,16 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const lastPointer = useRef("mouse");
   const [turned, setTurned] = useState<string | null>(null);
-  const [swaying, setSwaying] = useState<string | null>(null);
+  const [swaying, setSwaying] = useState<{ id: string; dir: 1 | -1; n: number } | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [leaving, setLeaving] = useState<string | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [page, setPage] = useState(0);
 
   useEffect(() => { if (window.matchMedia("(pointer: coarse)").matches) setIsTouch(true); }, []);
 
-  const sway = (id: string) => { setSwaying(null); requestAnimationFrame(() => setSwaying(id)); };
+  /** Starts a damped pendulum swing; dir = which way the garment is pushed first. */
+  const sway = (id: string, dir: 1 | -1 = 1) => setSwaying((current) => ({ id, dir, n: (current?.n ?? 0) + 1 }));
 
   const open = (item: RailItem) => {
     if (!item.handle) return;
@@ -34,9 +36,9 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   const handleClick = (item: RailItem) => {
     if (leaving) return;
     const touch = lastPointer.current !== "mouse";
-    if (touch && turned !== item.id) { setTurned(item.id); sway(item.id); return; }
+    if (touch && turned !== item.id) { setTurned(item.id); sway(item.id, -1); return; }
     setTurned(item.id);
-    sway(item.id);
+    sway(item.id, -1);
     open(item);
   };
 
@@ -48,6 +50,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   };
 
   const current = items.find((item) => item.id === turned);
+  const pushFrom = items.findIndex((item) => item.id === (hovered ?? turned));
 
   return (
     <section aria-label="Clothing rail" className="flex min-h-0 flex-1 flex-col bg-rail [--g-h:min(52svh,440px)] md:[--g-h:min(56svh,560px)]">
@@ -66,59 +69,80 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
             </div>
 
             <ul className="relative flex items-start justify-center gap-1 md:gap-3">
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const front = turned === item.id;
                 const fading = leaving !== null && leaving !== item.id;
+                const swing = swaying?.id === item.id ? swaying : null;
+                // Neighbouring hangers get nudged aside, like on a real rail.
+                const offset = pushFrom < 0 || index === pushFrom ? 0 : index < pushFrom ? -1 : 1;
+                const near = Math.abs(index - pushFrom) === 1;
+                const push: CSSProperties = {
+                  transform: offset && near ? `translateX(${offset * 10}px) rotate(${offset * 1.4}deg)` : offset ? `translateX(${offset * 4}px)` : "none",
+                  transformOrigin: "50% 3.5%",
+                  transition: `transform 900ms ${EASE}, opacity 500ms ease`,
+                };
                 const slot: CSSProperties = {
                   width: front ? "calc(var(--g-h) * 0.72)" : "calc(var(--g-h) * 0.3)",
-                  transition: `width 800ms ${EASE}, opacity 500ms ease`,
+                  transition: `width 800ms ${EASE}`,
                 };
+                const swingStyle = { transformOrigin: "50% 3.5%", "--dir": swing?.dir ?? 1 } as CSSProperties;
                 return (
-                  <li key={item.id} className={`relative shrink-0 snap-center ${fading ? "opacity-0" : "opacity-100"}`} style={{ transition: "opacity 500ms ease" }}>
+                  <li key={item.id} className={`relative shrink-0 snap-center ${fading ? "opacity-0" : "opacity-100"}`} style={push}>
                     <button
                       type="button"
                       aria-label={item.handle ? `${item.title}, ${item.price ?? ""}` : `${item.title}, coming soon`}
                       onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setIsTouch(true); }}
-                      onPointerEnter={(event) => { if (event.pointerType === "mouse" && !leaving) sway(item.id); }}
-                      onPointerLeave={(event) => { if (event.pointerType === "mouse" && !leaving && turned === item.id) setTurned(null); }}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType !== "mouse" || leaving) return;
+                        setHovered(item.id);
+                        const rect = event.currentTarget.getBoundingClientRect();
+                        sway(item.id, event.clientX < rect.left + rect.width / 2 ? 1 : -1);
+                      }}
+                      onPointerLeave={(event) => {
+                        if (event.pointerType !== "mouse" || leaving) return;
+                        setHovered(null);
+                        if (turned === item.id) setTurned(null);
+                      }}
                       onClick={() => handleClick(item)}
                       className="relative block h-[var(--g-h)] outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       style={slot}
                     >
-                      <span
-                        key={swaying === item.id ? "sway" : "still"}
-                        className={`pointer-events-none absolute inset-0 block ${swaying === item.id ? "garment-sway" : ""}`}
-                        style={{ transformOrigin: "50% 3.5%" }}
-                      >
-                        <span className={`absolute inset-0 block overflow-hidden [perspective:1200px] ${leaving === item.id ? "scale-[1.04]" : ""}`} style={{ transition: `transform 900ms ${EASE}`, transformOrigin: "50% 3.5%" }}>
-                          {/* Side view */}
-                          <img
-                            src={item.side ?? item.front}
-                            alt=""
-                            draggable={false}
-                            className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
-                            style={{
-                              transform: `translateX(-50%) rotateY(${front ? 90 : 0}deg)${item.side ? "" : " scaleX(0.38)"}`,
-                              transition: `transform 400ms ${front ? "ease-in" : `${EASE} 400ms`}`,
-                              backfaceVisibility: "hidden",
-                            }}
-                          />
-                          {/* Front view */}
-                          <img
-                            src={item.front}
-                            alt={item.title}
-                            draggable={false}
-                            className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
-                            style={{
-                              transform: `translateX(-50%) rotateY(${front ? 0 : -90}deg)`,
-                              transition: `transform 450ms ${front ? `${EASE} 380ms` : "ease-in"}`,
-                              backfaceVisibility: "hidden",
-                            }}
-                          />
-                        </span>
-                        {/* Price tag */}
-                        <span className="absolute left-1/2 top-[11%] z-10 -translate-x-[115%] -rotate-6 rounded-[3px] bg-background px-1.5 py-1 text-[8px] font-semibold uppercase leading-none shadow-sm md:text-[9px]">
-                          {item.price ?? "Soon"}
+                      <span className="garment-arrive pointer-events-none absolute inset-0 block" style={{ animationDelay: `${120 + index * 110}ms`, transformOrigin: "50% 3.5%" }}>
+                        <span className="garment-idle absolute inset-0 block" style={{ animationDelay: `${-index * 1.7}s`, transformOrigin: "50% 3.5%" }}>
+                          <span key={swing ? `swing-${swing.n}` : "still"} className={`absolute inset-0 block ${swing ? "garment-swing" : ""}`} style={swingStyle}>
+                            <span className={`absolute inset-0 block ${swing ? "garment-cloth" : ""}`} style={{ transformOrigin: "50% 3.5%" }}>
+                              <span className={`absolute inset-0 block overflow-hidden [perspective:1400px] ${leaving === item.id ? "scale-[1.04]" : ""}`} style={{ transition: `transform 900ms ${EASE}`, transformOrigin: "50% 3.5%" }}>
+                                {/* Side view */}
+                                <img
+                                  src={item.side ?? item.front}
+                                  alt=""
+                                  draggable={false}
+                                  className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
+                                  style={{
+                                    transform: `translateX(-50%) rotateY(${front ? 90 : 0}deg)${item.side ? "" : " scaleX(0.38)"}`,
+                                    transition: `transform 380ms ${front ? "cubic-bezier(0.55,0,0.9,0.4)" : `${EASE} 360ms`}`,
+                                    backfaceVisibility: "hidden",
+                                  }}
+                                />
+                                {/* Front view */}
+                                <img
+                                  src={item.front}
+                                  alt={item.title}
+                                  draggable={false}
+                                  className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
+                                  style={{
+                                    transform: `translateX(-50%) rotateY(${front ? 0 : -90}deg)`,
+                                    transition: `transform 520ms ${front ? `cubic-bezier(0.2,1.25,0.4,1) 360ms` : "cubic-bezier(0.55,0,0.9,0.4)"}`,
+                                    backfaceVisibility: "hidden",
+                                  }}
+                                />
+                              </span>
+                              {/* Price tag */}
+                              <span className="garment-tag absolute left-1/2 top-[11%] z-10 -translate-x-[115%] rounded-[3px] bg-background px-1.5 py-1 text-[8px] font-semibold uppercase leading-none shadow-sm md:text-[9px]">
+                                {item.price ?? "Soon"}
+                              </span>
+                            </span>
+                          </span>
                         </span>
                       </span>
                     </button>
