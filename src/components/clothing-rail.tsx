@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { RailItem } from "@/lib/rail";
 
@@ -10,6 +10,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   const [active, setActive] = useState<string | null>(null);
   const [leaving, setLeaving] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
+  const lastPointer = useRef<string>("mouse");
 
   useEffect(() => {
     const query = window.matchMedia("(hover: none)");
@@ -27,7 +28,8 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   };
 
   const handleClick = (item: RailItem) => {
-    if (touch && active !== item.id) { setActive(item.id); return; }
+    const isTouch = lastPointer.current === "touch" || lastPointer.current === "pen";
+    if (isTouch && active !== item.id) { setActive(item.id); return; }
     open(item);
   };
 
@@ -50,8 +52,9 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                   <button
                     type="button"
                     aria-label={item.handle ? `${item.title}${touch ? ", tap twice to open" : ""}` : `${item.title}, coming soon`}
-                    onMouseEnter={() => { if (!touch && !leaving) setActive(item.id); }}
-                    onMouseLeave={() => { if (!touch && !leaving) setActive(null); }}
+                    onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setTouch(true); }}
+                    onPointerEnter={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(item.id); }}
+                    onPointerLeave={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(null); }}
                     onFocus={() => { if (!leaving) setActive(item.id); }}
                     onClick={() => handleClick(item)}
                     className="relative block h-[300px] w-full outline-none [perspective:1100px] md:h-[400px]"
