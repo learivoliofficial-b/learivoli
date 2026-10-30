@@ -82,7 +82,7 @@ export function StoreHeader() {
   const count = useCartStore((state) => state.hydrated ? state.items.reduce((sum, item) => sum + item.quantity, 0) : 0);
   return (
     <>
-      <div className="bg-ink px-4 py-2 text-center text-[10px] font-semibold uppercase text-ink-foreground">Avenue Montaigne Hoodie — available now</div>
+      <div className="bg-ink px-4 py-2 text-center text-[10px] font-semibold uppercase text-ink-foreground">Buy 2 items and get free shipping</div>
       <header className={`sticky top-0 z-30 grid h-[76px] grid-cols-[1fr_auto_1fr] items-center border-b px-4 transition-[background-color,border-color] duration-500 ease-out md:px-9 ${scrolled ? "border-transparent bg-transparent" : "border-border bg-background/95"}`}>
         <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase md:flex" aria-label="Main navigation">
           <Link to="/">Shop</Link><Link to="/product/$handle" params={{ handle: "avenue-montaigne-hoodie" }}>New arrival</Link>
