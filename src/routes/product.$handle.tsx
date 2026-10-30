@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import brandLogo from "@/assets/logowithslogo-2.png";
 import { SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { parseDescription } from "@/lib/product-description";
 import { pickRailImages, RAIL_SIDE_TAG } from "@/lib/rail";
 import { formatMoney, getProductByHandle } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
@@ -77,13 +79,24 @@ function ProductPage() {
   const otherPickers = otherOptions.map((option) => <fieldset key={option.name}><legend className="mb-2 text-[9px] font-semibold uppercase">{option.name}</legend><div className="flex flex-wrap gap-1.5 lg:justify-end">{option.values.map((value) => <Button key={value} type="button" variant={selected[option.name] === value ? "default" : "outline"} className="h-10 min-w-10 rounded-none text-[10px] uppercase" onClick={() => setSelected((current) => ({ ...current, [option.name]: value }))}>{value}</Button>)}</div></fieldset>);
   const addButton = <Button ref={inlineButtonRef} className="h-11 w-full rounded-none text-[10px] uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}><ShoppingBag className="size-3.5" />{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>;
 
+  const parsed = parseDescription(product.descriptionHtml || product.description);
+  const descriptionBlock = <div className="text-left">
+    {parsed.intro.length > 0 && <p className="line-clamp-4 break-words text-[11px] leading-5 text-muted-foreground lg:line-clamp-5">{parsed.intro[0]}</p>}
+    {parsed.sections.length > 0 && <Accordion type="single" collapsible className="mt-5 border-t border-border">
+      {parsed.sections.map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
+        <AccordionTrigger className="py-3 text-[10px] font-semibold uppercase tracking-[0.12em] hover:no-underline [&>svg]:size-3.5">{section.title}</AccordionTrigger>
+        <AccordionContent><ul className="space-y-1 pb-1 text-[11px] leading-5 text-muted-foreground">{section.lines.map((line) => <li key={line}>{line}</li>)}</ul></AccordionContent>
+      </AccordionItem>)}
+    </Accordion>}
+  </div>;
+
   return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
     <section className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-8 lg:px-12">
       {/* Left: back, title, description — stays put while the images scroll */}
       <div className="hidden lg:sticky lg:top-[107px] lg:flex lg:h-[calc(100svh-107px)] lg:min-w-0 lg:flex-col lg:justify-center">
         <Link to="/" className="inline-flex items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground"><ChevronLeft className="size-3" />Back</Link>
         <h1 className="mt-4 max-w-xs text-xl font-semibold uppercase leading-tight">{product.title}</h1>
-        <p className="mt-4 line-clamp-[12] max-w-xs overflow-hidden whitespace-pre-line break-words text-[11px] leading-5 text-muted-foreground">{product.description}</p>
+        <div className="mt-4 max-w-xs">{descriptionBlock}</div>
       </div>
 
       {/* Center: images stacked, scroll down to see more */}
@@ -109,7 +122,7 @@ function ProductPage() {
         {otherPickers}
         {addButton}
         {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
-        <div className="product-description space-y-1 break-words text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+        <div className="pt-2 lg:hidden">{descriptionBlock}</div>
       </div>
 
     </section>
