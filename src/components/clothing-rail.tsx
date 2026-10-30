@@ -55,7 +55,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                     onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setTouch(true); }}
                     onPointerEnter={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(item.id); }}
                     onPointerLeave={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(null); }}
-                    onFocus={() => { if (!leaving) setActive(item.id); }}
+                    onFocus={(event) => { if (!leaving && event.currentTarget.matches(":focus-visible")) setActive(item.id); }}
                     onClick={() => handleClick(item)}
                     className="relative block h-[300px] w-full outline-none [perspective:1100px] md:h-[400px]"
                   >
