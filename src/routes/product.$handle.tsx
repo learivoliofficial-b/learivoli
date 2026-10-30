@@ -84,17 +84,17 @@ function ProductPage() {
   const addButton = <Button ref={inlineButtonRef} className="h-11 w-full rounded-none text-[10px] uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}><ShoppingBag className="size-3.5" />{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>;
 
   return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
-    <section className="relative lg:grid lg:h-[calc(100svh-107px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:px-12">
+    <section className="relative flex flex-col lg:grid lg:h-[calc(100svh-107px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:px-12">
       {/* Left: back, title, description */}
-      <div className="order-2 px-5 pt-6 lg:order-none lg:self-center lg:px-0 lg:pt-0">
+      <div className="order-2 min-w-0 px-5 pt-6 lg:order-none lg:self-center lg:px-0 lg:pt-0">
         <Link to="/" className="hidden items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground lg:inline-flex"><ChevronLeft className="size-3" />Back</Link>
         <h1 className="text-lg font-semibold uppercase leading-tight lg:mt-4 lg:max-w-xs lg:text-xl">{product.title}</h1>
         <p className="mt-1 text-sm lg:hidden">{price}</p>
-        <div className="product-description mt-4 hidden max-w-xs space-y-1 text-[11px] leading-5 text-muted-foreground lg:block" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+        <p className="mt-4 hidden max-w-xs overflow-hidden whitespace-pre-line break-words text-[11px] leading-5 text-muted-foreground lg:line-clamp-[12]">{product.description}</p>
       </div>
 
       {/* Center: the garment */}
-      <div className="relative order-1 flex flex-col items-center lg:order-none lg:h-full lg:justify-center">
+      <div className="relative order-1 flex min-w-0 flex-col items-center lg:order-none lg:h-full lg:justify-center">
         <Link to="/" aria-label="Back to the rail" className="absolute left-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-background/80 lg:hidden"><ChevronLeft className="size-4" /></Link>
         <div ref={mobileGalleryRef} className="flex w-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden" onScroll={(event) => { const width = event.currentTarget.clientWidth; if (width) setActiveImage(Math.round(event.currentTarget.scrollLeft / width)); }}>
           {showcase.map((image, index) => <div key={image.url} className="grid w-full shrink-0 snap-center place-items-center px-6 pt-6"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} className={`max-h-[56svh] w-auto object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
@@ -114,7 +114,7 @@ function ProductPage() {
         {otherPickers}
         {addButton}
         {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
-        <div className="product-description space-y-1 text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+        <div className="product-description space-y-1 break-words text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
       </div>
     </section>
     <section className="mt-12 border-t border-border bg-background lg:mt-0">
