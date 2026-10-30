@@ -56,7 +56,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                     onClick={() => handleClick(item)}
                     className="relative block h-[300px] w-full outline-none [perspective:1100px] md:h-[400px]"
                   >
-                    <span key={isActive ? "on" : "off"} className={`absolute left-1/2 top-0 block w-[210px] -translate-x-1/2 md:w-[280px] ${isActive ? "garment-sway" : ""}`} style={{ transformOrigin: "50% 0%" }}>
+                    <span key={isActive ? "on" : "off"} className={`pointer-events-none absolute left-1/2 top-0 block w-[210px] -translate-x-1/2 md:w-[280px] ${isActive ? "garment-sway" : ""}`} style={{ transformOrigin: "50% 0%" }}>
                       <img
                         src={item.image}
                         alt={item.title}
