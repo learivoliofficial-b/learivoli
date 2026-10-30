@@ -149,7 +149,7 @@ function YouMayAlsoLike({ items }: { items: Recommendation[] }) {
   if (!items.length) return null;
   return <section aria-labelledby="also-like" className="border-t border-border px-4 py-12 md:px-12 md:py-16">
     <h2 id="also-like" className="mb-6 text-sm font-semibold uppercase md:mb-8">You may also like</h2>
-    <ul className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:px-0">
+    <ul className="scrollbar-none -mx-4 flex scroll-px-4 snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:px-0">
       {items.map((item) => {
         const card = <>
           <div className="aspect-[4/5] overflow-hidden bg-background"><img src={item.image} alt={item.title} loading="lazy" className="size-full object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-[1.04]" /></div>
