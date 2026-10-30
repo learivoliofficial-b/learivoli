@@ -91,7 +91,7 @@ function ProductPage() {
       {/* Mobile: first image full square */}
       <div className="relative lg:hidden">
         <Link to="/" aria-label="Back to the rail" className="absolute left-3 top-3 z-10 grid size-9 place-items-center rounded-full bg-background/80"><ChevronLeft className="size-4" /></Link>
-        {showcase[0] && <img src={showcase[0].url} alt={showcase[0].altText ?? product.title} className="aspect-square w-full object-cover" />}
+        {showcase[0] && <div className="aspect-square w-full overflow-hidden"><img src={showcase[0].url} alt={showcase[0].altText ?? product.title} className="size-full scale-[1.18] object-cover" /></div>}
       </div>
 
       {/* Right: price, options, add to cart — stays put on desktop */}
