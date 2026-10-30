@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import type { RailItem } from "@/lib/rail";
 
@@ -20,6 +20,8 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
   const [leaving, setLeaving] = useState<string | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [page, setPage] = useState(0);
+
+  useEffect(() => { if (window.matchMedia("(pointer: coarse)").matches) setIsTouch(true); }, []);
 
   const sway = (id: string) => { setSwaying(null); requestAnimationFrame(() => setSwaying(id)); };
 
@@ -94,7 +96,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                             src={item.side ?? item.front}
                             alt=""
                             draggable={false}
-                            className="absolute left-1/2 top-0 h-full w-auto max-w-none select-none"
+                            className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
                             style={{
                               transform: `translateX(-50%) rotateY(${front ? 90 : 0}deg)${item.side ? "" : " scaleX(0.38)"}`,
                               transition: `transform 400ms ${front ? "ease-in" : `${EASE} 400ms`}`,
@@ -106,7 +108,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                             src={item.front}
                             alt={item.title}
                             draggable={false}
-                            className="absolute left-1/2 top-0 h-full w-auto max-w-none select-none"
+                            className={`absolute left-1/2 top-0 h-full w-auto max-w-none select-none ${item.handle ? "brightness-[1.05]" : ""}`}
                             style={{
                               transform: `translateX(-50%) rotateY(${front ? 0 : -90}deg)`,
                               transition: `transform 450ms ${front ? `${EASE} 380ms` : "ease-in"}`,
