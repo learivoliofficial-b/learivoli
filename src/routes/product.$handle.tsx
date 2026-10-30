@@ -1,10 +1,11 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import brandLogo from "@/assets/logowithslogo-2.png";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { pickRailImages, RAIL_SIDE_TAG } from "@/lib/rail";
 import { formatMoney, getProductByHandle } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
 
@@ -48,6 +49,7 @@ function ProductPage() {
   }, []);
   const variant = useMemo(() => product.variants.edges.map(({ node }) => node).find((entry) => entry.selectedOptions.every((option) => selected[option.name] === option.value)), [product, selected]);
   const images = product.images.edges.map(({ node }) => node);
+  const frontImage = pickRailImages(product).front;
 
   const colorOptions = product.options.find((option) => option.name.toLowerCase() === "color");
   const sizeOptions = product.options.find((option) => option.name.toLowerCase() === "size");
@@ -72,29 +74,50 @@ function ProductPage() {
     setNotice(added ? "Added to your cart." : "Could not add this item. Please try again.");
   };
 
-  return <main className="min-h-screen bg-background pb-20 text-foreground lg:pb-0"><StoreHeader />
-    <div className="grid lg:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.75fr)]">
-      <div>
-        <div ref={mobileGalleryRef} className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden" onScroll={(event) => { const width = event.currentTarget.clientWidth; if (width) setActiveImage(Math.round(event.currentTarget.scrollLeft / width)); }}>
-          {images.map((image, index) => <div key={image.url} className="w-full shrink-0 snap-center bg-muted"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} className="aspect-[4/5] size-full object-cover" /></div>)}
-        </div>
-        <div className="flex h-10 items-center justify-center gap-2 lg:hidden" aria-label={`Image ${activeImage + 1} of ${images.length}`}>
-          {images.map((image, index) => <Button key={image.url} type="button" variant="ghost" size="icon" aria-label={`View image ${index + 1}`} onClick={() => scrollToImage(index)} className="size-5 rounded-full p-0"><span className={`block size-1.5 rounded-full transition-transform ${activeImage === index ? "scale-125 bg-foreground" : "bg-border"}`} /></Button>)}
-        </div>
-        <div className="hidden bg-border lg:grid lg:grid-cols-1 lg:gap-px">{images.map((image, index) => <div key={image.url} className="bg-muted"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} className="aspect-[4/5] size-full object-cover" /></div>)}</div>
+  const showcase = [frontImage, ...images.filter((image) => image !== frontImage && !image.altText?.toLowerCase().includes(RAIL_SIDE_TAG))].filter((image): image is NonNullable<typeof image> => Boolean(image));
+  const shown = showcase[activeImage] ?? showcase[0];
+  const price = variant ? formatMoney(variant.price.amount, variant.price.currencyCode) : formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
+
+  const colorPicker = colorOptions && <fieldset><legend className="mb-2 text-[9px] font-semibold uppercase">Color: <span className="font-normal text-muted-foreground">{selected[colorOptions.name]}</span></legend><div className="flex flex-wrap gap-2 lg:justify-end">{colorOptions.values.map((color) => { const image = colorImages[color]; const isSelected = selected[colorOptions.name] === color; return <Button key={color} type="button" variant="ghost" aria-label={`Select ${color}`} aria-pressed={isSelected} className="h-auto w-12 rounded-none p-0 hover:bg-transparent" onClick={() => setSelected((current) => ({ ...current, [colorOptions.name]: color }))}><span className={`block aspect-square w-full overflow-hidden border bg-muted ${isSelected ? "border-foreground ring-1 ring-foreground" : "border-border"}`}>{image && <img src={image.url} alt={`${color} ${product.title}`} className="size-full object-contain" />}</span></Button>; })}</div></fieldset>;
+  const sizePicker = sizeOptions && <fieldset><legend className="mb-2 flex w-full justify-between text-[9px] font-semibold uppercase"><span>Size</span><span className="font-normal text-muted-foreground">{selected[sizeOptions.name]}</span></legend><div className="flex flex-wrap gap-1.5 lg:justify-end">{sizeOptions.values.map((size) => { const isSelected = selected[sizeOptions.name] === size; return <Button key={size} type="button" variant="outline" aria-pressed={isSelected} className={`size-10 rounded-none border bg-background p-0 text-[10px] uppercase shadow-none ${isSelected ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-border hover:border-foreground hover:bg-background"}`} onClick={() => setSelected((current) => ({ ...current, [sizeOptions.name]: size }))}>{size}</Button>; })}</div></fieldset>;
+  const otherPickers = otherOptions.map((option) => <fieldset key={option.name}><legend className="mb-2 text-[9px] font-semibold uppercase">{option.name}</legend><div className="flex flex-wrap gap-1.5 lg:justify-end">{option.values.map((value) => <Button key={value} type="button" variant={selected[option.name] === value ? "default" : "outline"} className="h-10 min-w-10 rounded-none text-[10px] uppercase" onClick={() => setSelected((current) => ({ ...current, [option.name]: value }))}>{value}</Button>)}</div></fieldset>);
+  const addButton = <Button ref={inlineButtonRef} className="h-11 w-full rounded-none text-[10px] uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}><ShoppingBag className="size-3.5" />{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>;
+
+  return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
+    <section className="relative flex flex-col lg:grid lg:h-[calc(100svh-107px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:px-12">
+      {/* Left: back, title, description */}
+      <div className="order-2 min-w-0 px-5 pt-6 lg:order-none lg:self-center lg:px-0 lg:pt-0">
+        <Link to="/" className="hidden items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground lg:inline-flex"><ChevronLeft className="size-3" />Back</Link>
+        <h1 className="text-lg font-semibold uppercase leading-tight lg:mt-4 lg:max-w-xs lg:text-xl">{product.title}</h1>
+        <p className="mt-1 text-sm lg:hidden">{price}</p>
+        <p className="mt-4 hidden max-w-xs overflow-hidden whitespace-pre-line break-words text-[11px] leading-5 text-muted-foreground lg:line-clamp-[12]">{product.description}</p>
       </div>
-      <section className="px-5 py-9 lg:sticky lg:top-[76px] lg:h-[calc(100svh-76px)] lg:overflow-y-auto lg:px-10 lg:py-12">
-        <p className="text-[10px] font-semibold uppercase text-muted-foreground">{product.productType}</p><h1 className="mt-3 font-serif text-3xl uppercase md:text-4xl">{product.title}</h1><p className="mt-4 text-sm">{variant ? formatMoney(variant.price.amount, variant.price.currencyCode) : formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</p>
-        <div className="mt-10 space-y-7">
-          {colorOptions && <fieldset><legend className="mb-3 text-[10px] font-semibold uppercase">Color: <span className="font-normal text-muted-foreground">{selected[colorOptions.name]}</span></legend><div className="flex flex-wrap gap-3">{colorOptions.values.map((color) => { const image = colorImages[color]; const isSelected = selected[colorOptions.name] === color; return <Button key={color} type="button" variant="ghost" aria-label={`Select ${color}`} aria-pressed={isSelected} className={`h-auto w-20 flex-col gap-2 rounded-none p-0 text-[9px] uppercase hover:bg-transparent ${isSelected ? "text-foreground" : "text-muted-foreground"}`} onClick={() => setSelected((current) => ({ ...current, [colorOptions.name]: color }))}><span className={`block aspect-square w-full overflow-hidden border bg-muted ${isSelected ? "border-foreground ring-1 ring-foreground" : "border-border"}`}>{image && <img src={image.url} alt={`${color} ${product.title}`} className="size-full object-contain" />}</span><span>{color}</span></Button>; })}</div></fieldset>}
-          {sizeOptions && <fieldset><legend className="mb-3 text-[10px] font-semibold uppercase">Size: <span className="font-normal text-muted-foreground">{selected[sizeOptions.name]}</span></legend><div className="flex flex-wrap gap-2">{sizeOptions.values.map((size) => { const isSelected = selected[sizeOptions.name] === size; return <Button key={size} type="button" variant="outline" aria-pressed={isSelected} className={`size-12 rounded-none border bg-background p-0 uppercase shadow-none ${isSelected ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-border hover:border-foreground hover:bg-background"}`} onClick={() => setSelected((current) => ({ ...current, [sizeOptions.name]: size }))}>{size}</Button>; })}</div></fieldset>}
-          {otherOptions.map((option) => <fieldset key={option.name}><legend className="mb-3 text-[10px] font-semibold uppercase">{option.name}: <span className="font-normal text-muted-foreground">{selected[option.name]}</span></legend><div className="flex flex-wrap gap-2">{option.values.map((value) => <Button key={value} type="button" variant={selected[option.name] === value ? "default" : "outline"} className="min-w-14 rounded-none uppercase" onClick={() => setSelected((current) => ({ ...current, [option.name]: value }))}>{value}</Button>)}</div></fieldset>)}
+
+      {/* Center: the garment */}
+      <div className="relative order-1 flex min-w-0 flex-col items-center lg:order-none lg:h-full lg:justify-center">
+        <Link to="/" aria-label="Back to the rail" className="absolute left-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-background/80 lg:hidden"><ChevronLeft className="size-4" /></Link>
+        <div ref={mobileGalleryRef} className="flex w-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden" onScroll={(event) => { const width = event.currentTarget.clientWidth; if (width) setActiveImage(Math.round(event.currentTarget.scrollLeft / width)); }}>
+          {showcase.map((image, index) => <div key={image.url} className="grid w-full shrink-0 snap-center place-items-center px-6 pt-6"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} className={`max-h-[56svh] w-auto object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
         </div>
-        <Button ref={inlineButtonRef} className="mt-9 h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>{notice && <p className="mt-3 text-center text-xs" role="status">{notice}</p>}
-        <Accordion type="single" collapsible className="mt-9 border-t border-border"><AccordionItem value="description"><AccordionTrigger className="text-[10px] uppercase">Description</AccordionTrigger><AccordionContent><div className="product-description space-y-3 text-xs leading-6 text-muted-foreground" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} /></AccordionContent></AccordionItem><AccordionItem value="shipping"><AccordionTrigger className="text-[10px] uppercase">Shipping & returns</AccordionTrigger><AccordionContent><p className="text-xs leading-6 text-muted-foreground">Shipping rates and delivery estimates are shown at checkout. Returns are accepted according to the store's current return policy.</p></AccordionContent></AccordionItem></Accordion>
-      </section>
-    </div>
-    <section className="border-t border-border bg-background">
+        <div className="flex h-8 items-center justify-center gap-1.5 lg:hidden" aria-label={`Image ${activeImage + 1} of ${showcase.length}`}>
+          {showcase.map((image, index) => <button key={image.url} type="button" aria-label={`View image ${index + 1}`} onClick={() => scrollToImage(index)} className={`h-1.5 rounded-full transition-all ${activeImage === index ? "w-5 bg-foreground" : "w-1.5 bg-border"}`} />)}
+        </div>
+        {shown && <img key={shown.url} src={shown.url} alt={shown.altText ?? product.title} className="garment-drop hidden max-h-[72%] w-auto max-w-full object-contain brightness-[1.05] lg:block" />}
+        {showcase.length > 1 && <div className="mt-6 hidden gap-2 lg:flex">{showcase.map((image, index) => <button key={image.url} type="button" aria-label={`View image ${index + 1}`} onClick={() => setActiveImage(index)} className={`size-12 overflow-hidden border bg-background ${activeImage === index ? "border-foreground" : "border-border opacity-60 hover:opacity-100"}`}><img src={image.url} alt="" className="size-full object-contain brightness-[1.05]" /></button>)}</div>}
+      </div>
+
+      {/* Right: price, options, add to cart */}
+      <div className="order-3 space-y-5 px-5 pt-6 lg:order-none lg:ml-auto lg:w-full lg:max-w-[280px] lg:self-center lg:px-0 lg:pt-0 lg:text-right">
+        <p className="hidden text-sm lg:block">{price}</p>
+        {colorPicker}
+        {sizePicker}
+        {otherPickers}
+        {addButton}
+        {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
+        <div className="product-description space-y-1 break-words text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+      </div>
+    </section>
+    <section className="mt-12 border-t border-border bg-background lg:mt-0">
       {images.at(-1) && <div className="mx-auto max-w-3xl"><img src={images.at(-1)?.url} alt={images.at(-1)?.altText ?? "The Léa Rivoli story"} className="aspect-[4/5] w-full object-cover" /></div>}
       <div className="mx-auto max-w-2xl px-6 py-16 text-center md:py-24">
         <h2 className="text-4xl uppercase md:text-5xl">Our Story</h2>
