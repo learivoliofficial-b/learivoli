@@ -1,86 +1,141 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 
 import type { RailItem } from "@/lib/rail";
 
-const TURN_MS = 700;
+const EASE = "cubic-bezier(0.22,1,0.36,1)";
+const NAVIGATE_AFTER_MS = 1000;
 
+/**
+ * Full-screen clothing rail. Garments hang sideways on one shared rail.
+ * Computer: hover sways, click turns the garment to the front and opens the product.
+ * Phone: tap turns it to the front, tap again opens the product.
+ */
 export function ClothingRail({ items }: { items: RailItem[] }) {
   const navigate = useNavigate();
-  const [active, setActive] = useState<string | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const lastPointer = useRef("mouse");
+  const [turned, setTurned] = useState<string | null>(null);
+  const [swaying, setSwaying] = useState<string | null>(null);
   const [leaving, setLeaving] = useState<string | null>(null);
-  const [touch, setTouch] = useState(false);
-  const lastPointer = useRef<string>("mouse");
+  const [isTouch, setIsTouch] = useState(false);
+  const [page, setPage] = useState(0);
 
-  useEffect(() => {
-    const query = window.matchMedia("(hover: none)");
-    const update = () => setTouch(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
+  const sway = (id: string) => { setSwaying(null); requestAnimationFrame(() => setSwaying(id)); };
 
   const open = (item: RailItem) => {
-    if (!item.handle || leaving) return;
-    setActive(item.id);
+    if (!item.handle) return;
     setLeaving(item.id);
-    window.setTimeout(() => void navigate({ to: "/product/$handle", params: { handle: item.handle! } }), TURN_MS);
+    window.setTimeout(() => void navigate({ to: "/product/$handle", params: { handle: item.handle! } }), NAVIGATE_AFTER_MS);
   };
 
   const handleClick = (item: RailItem) => {
-    const isTouch = lastPointer.current === "touch" || lastPointer.current === "pen";
-    if (isTouch && active !== item.id) { setActive(item.id); return; }
+    if (leaving) return;
+    const touch = lastPointer.current !== "mouse";
+    if (touch && turned !== item.id) { setTurned(item.id); sway(item.id); return; }
+    setTurned(item.id);
+    sway(item.id);
     open(item);
   };
 
-  const current = items.find((item) => item.id === active);
+  const onScroll = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const max = track.scrollWidth - track.clientWidth;
+    setPage(max <= 0 ? 0 : Math.round((track.scrollLeft / max) * (items.length - 1)));
+  };
+
+  const current = items.find((item) => item.id === turned);
 
   return (
-    <section className="bg-rail" aria-label="Clothing rail">
-      <div className="flex items-center justify-center gap-3 pt-10 text-[9px] font-semibold uppercase md:pt-14">
+    <section aria-label="Clothing rail" className="flex min-h-0 flex-1 flex-col bg-rail [--g-h:min(52svh,440px)] md:[--g-h:min(56svh,560px)]">
+      <div className="flex shrink-0 items-center justify-center gap-3 pt-6 text-[9px] font-semibold uppercase tracking-[0.18em] md:pt-10 md:text-[10px]">
         <span>New collection</span><span className="h-3 w-px bg-border" /><span className="text-muted-foreground">Léa Rivoli Paris</span>
       </div>
-      <div className="scrollbar-none overflow-x-auto overflow-y-hidden">
-        <div className="relative mx-auto w-max min-w-full px-6 pb-4 pt-8 md:px-12">
-          <div className="pointer-events-none absolute inset-x-6 top-[38px] z-10 h-[3px] rounded-full bg-rail-bar md:inset-x-12" />
-          <ul className="relative flex justify-center pt-0">
-            {items.map((item) => {
-              const isActive = active === item.id;
-              const fading = leaving && leaving !== item.id;
-              return (
-                <li key={item.id} className={`relative shrink-0 transition-[width,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${isActive ? "w-[210px] md:w-[280px]" : "w-[64px] md:w-[86px]"} ${fading ? "opacity-0" : "opacity-100"}`}>
-                  <button
-                    type="button"
-                    aria-label={item.handle ? `${item.title}${touch ? ", tap twice to open" : ""}` : `${item.title}, coming soon`}
-                    onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setTouch(true); }}
-                    onPointerEnter={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(item.id); }}
-                    onPointerLeave={(event) => { if (event.pointerType === "mouse" && !leaving) setActive(null); }}
-                    onFocus={(event) => { if (!leaving && event.currentTarget.matches(":focus-visible")) setActive(item.id); }}
-                    onClick={() => handleClick(item)}
-                    className="relative block h-[300px] w-full outline-none [perspective:1100px] md:h-[400px]"
-                  >
-                    <span key={isActive ? "on" : "off"} className={`pointer-events-none absolute left-1/2 top-0 block w-[210px] -translate-x-1/2 md:w-[280px] ${isActive ? "garment-sway" : ""}`} style={{ transformOrigin: "50% 0%" }}>
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        width={768}
-                        height={1024}
-                        draggable={false}
-                        className={`block h-auto w-full select-none transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${leaving === item.id ? "scale-[1.06]" : ""}`}
-                        style={{ transform: `rotateY(${isActive ? 0 : -72}deg)`, transformOrigin: "50% 0%" }}
-                      />
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+
+      <div className="relative flex min-h-0 flex-1 flex-col justify-center">
+        <div ref={trackRef} onScroll={onScroll} className="scrollbar-none snap-x snap-mandatory overflow-x-auto overflow-y-hidden md:snap-none">
+          <div className="relative mx-auto w-max min-w-full px-4 md:px-16">
+            {/* The shared rail */}
+            <div aria-hidden className="pointer-events-none absolute inset-x-1 top-[calc(var(--g-h)*0.035)] z-20 md:inset-x-8">
+              <div className="absolute -top-[5px] left-0 h-[14px] w-[6px] rounded-[1px] bg-rail-bracket" />
+              <div className="absolute -top-[5px] right-0 h-[14px] w-[6px] rounded-[1px] bg-rail-bracket" />
+              <div className="mx-[4px] h-[4px] rounded-full bg-[image:var(--rail-metal)] shadow-[0_1px_2px_var(--rail-shadow)]" />
+            </div>
+
+            <ul className="relative flex items-start justify-center gap-1 md:gap-3">
+              {items.map((item) => {
+                const front = turned === item.id;
+                const fading = leaving !== null && leaving !== item.id;
+                const slot: CSSProperties = {
+                  width: front ? "calc(var(--g-h) * 0.72)" : "calc(var(--g-h) * 0.3)",
+                  transition: `width 800ms ${EASE}, opacity 500ms ease`,
+                };
+                return (
+                  <li key={item.id} className={`relative shrink-0 snap-center ${fading ? "opacity-0" : "opacity-100"}`} style={{ transition: "opacity 500ms ease" }}>
+                    <button
+                      type="button"
+                      aria-label={item.handle ? `${item.title}, ${item.price ?? ""}` : `${item.title}, coming soon`}
+                      onPointerDown={(event) => { lastPointer.current = event.pointerType; if (event.pointerType !== "mouse") setIsTouch(true); }}
+                      onPointerEnter={(event) => { if (event.pointerType === "mouse" && !leaving) sway(item.id); }}
+                      onPointerLeave={(event) => { if (event.pointerType === "mouse" && !leaving && turned === item.id) setTurned(null); }}
+                      onClick={() => handleClick(item)}
+                      className="relative block h-[var(--g-h)] outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      style={slot}
+                    >
+                      <span
+                        key={swaying === item.id ? "sway" : "still"}
+                        className={`pointer-events-none absolute inset-0 block ${swaying === item.id ? "garment-sway" : ""}`}
+                        style={{ transformOrigin: "50% 3.5%" }}
+                      >
+                        <span className={`absolute inset-0 block overflow-hidden [perspective:1200px] ${leaving === item.id ? "scale-[1.04]" : ""}`} style={{ transition: `transform 900ms ${EASE}`, transformOrigin: "50% 3.5%" }}>
+                          {/* Side view */}
+                          <img
+                            src={item.side ?? item.front}
+                            alt=""
+                            draggable={false}
+                            className="absolute left-1/2 top-0 h-full w-auto max-w-none select-none"
+                            style={{
+                              transform: `translateX(-50%) rotateY(${front ? 90 : 0}deg)${item.side ? "" : " scaleX(0.38)"}`,
+                              transition: `transform 400ms ${front ? "ease-in" : `${EASE} 400ms`}`,
+                              backfaceVisibility: "hidden",
+                            }}
+                          />
+                          {/* Front view */}
+                          <img
+                            src={item.front}
+                            alt={item.title}
+                            draggable={false}
+                            className="absolute left-1/2 top-0 h-full w-auto max-w-none select-none"
+                            style={{
+                              transform: `translateX(-50%) rotateY(${front ? 0 : -90}deg)`,
+                              transition: `transform 450ms ${front ? `${EASE} 380ms` : "ease-in"}`,
+                              backfaceVisibility: "hidden",
+                            }}
+                          />
+                        </span>
+                        {/* Price tag */}
+                        <span className="absolute left-1/2 top-[11%] z-10 -translate-x-[115%] -rotate-6 rounded-[3px] bg-background px-1.5 py-1 text-[8px] font-semibold uppercase leading-none shadow-sm md:text-[9px]">
+                          {item.price ?? "Soon"}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-center gap-1.5 md:hidden" aria-hidden>
+          {items.map((item, index) => <span key={item.id} className={`h-1.5 rounded-full transition-all duration-300 ${index === page ? "w-6 bg-foreground" : "w-1.5 bg-border"}`} />)}
         </div>
       </div>
-      <div className="grid min-h-28 place-items-center content-start gap-2 px-6 pb-12 text-center">
-        <p className={`text-[11px] font-semibold uppercase transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current?.title ?? "\u00a0"}</p>
-        <p className={`text-[10px] uppercase text-muted-foreground transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current ? current.price ?? "Coming soon" : "\u00a0"}</p>
-        <p className="mt-3 font-mono text-[10px] text-muted-foreground">{touch ? "Tap to turn. Tap again to shop." : "Hover to turn. Click to shop."}</p>
+
+      <div className="grid shrink-0 justify-items-center gap-1.5 px-6 pb-6 text-center md:pb-10">
+        <p className={`h-4 text-[11px] font-semibold uppercase transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current?.title}</p>
+        <p className={`h-4 text-[10px] uppercase text-muted-foreground transition-opacity duration-500 ${current ? "opacity-100" : "opacity-0"}`}>{current ? current.price ?? "Coming soon" : ""}</p>
+        <p className="mt-1 font-mono text-[10px] text-muted-foreground">{isTouch ? "Tap to turn. Tap again to shop." : "Click to turn and shop."}</p>
       </div>
     </section>
   );

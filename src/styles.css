@@ -70,6 +70,7 @@
   --color-overlay: var(--overlay);
   --color-rail: var(--rail);
   --color-rail-bar: var(--rail-bar);
+  --color-rail-bracket: var(--rail-bracket);
 }
 
 :root {
@@ -115,6 +116,9 @@
   --overlay: oklch(0 0 0 / 0.48);
   --rail: oklch(1 0 0);
   --rail-bar: oklch(0.72 0.005 75);
+  --rail-bracket: oklch(0.62 0.004 250);
+  --rail-shadow: oklch(0 0 0 / 0.18);
+  --rail-metal: linear-gradient(180deg, oklch(0.86 0.003 250), oklch(0.6 0.004 250) 55%, oklch(0.78 0.003 250));
 }
 
 .dark {
