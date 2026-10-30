@@ -13,7 +13,7 @@ export function parseDescription(html: string): ParsedDescription {
   const sections: DescriptionSection[] = [];
   let current: DescriptionSection | null = null;
   for (const block of blocks) {
-    const text = decode(block.replace(/<[^>]+>/g, "")).trim();
+    const text = decode(block.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
     if (!text) { current = null; continue; }
     if (HEADINGS.includes(text.toLowerCase().replace(/:$/, ""))) {
       current = { title: text.replace(/:$/, ""), lines: [] };
