@@ -138,7 +138,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
                                 />
                               </span>
                               {/* Price tag */}
-                              <span className="garment-tag absolute left-1/2 top-[11%] z-10 -translate-x-[115%] rounded-[3px] bg-background px-1.5 py-1 text-[8px] font-semibold uppercase leading-none shadow-sm md:text-[9px]">
+                              <span className="garment-tag absolute left-1/2 top-[11%] z-10 rounded-[3px] bg-background px-1.5 py-1 text-[8px] font-semibold uppercase leading-none shadow-sm md:text-[9px]">
                                 {item.price ?? "Soon"}
                               </span>
                             </span>
