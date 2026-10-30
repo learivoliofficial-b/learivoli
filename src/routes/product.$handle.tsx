@@ -154,7 +154,7 @@ function YouMayAlsoLike({ items }: { items: Recommendation[] }) {
         const card = <>
           <div className="aspect-[4/5] overflow-hidden bg-background"><img src={item.image} alt={item.title} loading="lazy" className="size-full object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-[1.04]" /></div>
           <p className="mt-3 truncate text-[10px] font-semibold uppercase">{item.title}</p>
-          <p className="mt-1 text-[10px] uppercase text-muted-foreground">{item.handle ? item.price : "Coming soon"}</p>
+          <p className="mt-1 text-[10px] uppercase text-muted-foreground">{item.price}</p>
         </>;
         return <li key={item.id} className="w-[44%] shrink-0 snap-start md:w-auto">
           {item.handle ? <Link to="/product/$handle" params={{ handle: item.handle }} className="group block">{card}</Link> : <div className="group block">{card}</div>}
