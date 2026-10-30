@@ -9,6 +9,7 @@ import logo from "@/assets/biggerlog.png";
 import { Button } from "@/components/ui/button";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
+import { freeShippingProgress } from "@/lib/shipping";
 
 const socialImages = [
   { src: ugcStreet, alt: "Léa Rivoli Avenue Montaigne hoodie worn on the street in Paris" },
@@ -109,6 +110,7 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-background p-6 transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"}`} aria-hidden={!open}>
       <div className="flex items-center justify-between border-b border-border pb-5"><h2 className="text-sm font-semibold uppercase">Your cart ({items.reduce((sum, item) => sum + item.quantity, 0)})</h2><IconButton label="Close cart" onClick={onClose}><X /></IconButton></div>
+      <FreeShippingBar count={items.reduce((sum, item) => sum + item.quantity, 0)} />
       {!items.length ? <p className="pt-10 text-sm text-muted-foreground">Your cart is empty.</p> : <>
         <ul className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">{items.map((item) => <li key={item.variantId} className="flex gap-4 py-5"><div className="aspect-[3/4] w-20 shrink-0 overflow-hidden bg-muted">{item.product.image && <img src={item.product.image} alt={item.product.title} className="size-full object-cover" />}</div><div className="min-w-0 flex-1"><Link to="/product/$handle" params={{ handle: item.product.handle }} onClick={onClose} className="text-xs font-semibold uppercase">{item.product.title}</Link><p className="mt-1 text-[10px] text-muted-foreground">{item.selectedOptions.map(({ value }) => value).join(" / ")}</p><p className="mt-2 text-xs">{formatMoney(item.price.amount, item.price.currencyCode)}</p><div className="mt-4 flex items-center gap-2"><IconButton label="Decrease quantity" onClick={() => void updateQuantity(item.variantId, item.quantity - 1)}><Minus /></IconButton><span className="w-5 text-center text-xs">{item.quantity}</span><IconButton label="Increase quantity" onClick={() => void updateQuantity(item.variantId, item.quantity + 1)}><Plus /></IconButton></div></div><IconButton label="Remove item" onClick={() => void removeItem(item.variantId)}><Trash2 /></IconButton></li>)}</ul>
         <div className="border-t border-border pt-5"><div className="mb-5 flex justify-between text-sm font-semibold uppercase"><span>Total</span><span>{formatMoney(String(total), currency)}</span></div><Button className="h-12 w-full rounded-none uppercase" disabled={!checkoutUrl || isLoading || isSyncing} onClick={() => { if (checkoutUrl) { window.open(checkoutUrl, "_blank", "noopener,noreferrer"); onClose(); } }}>{isLoading || isSyncing ? "Updating…" : "Checkout"}</Button></div>
@@ -124,4 +126,11 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
 export function StoreFooter() {
   return <footer className="grid gap-12 border-t border-border px-6 py-14 text-[11px] uppercase md:grid-cols-3 md:px-10"><div><p className="max-w-xs normal-case leading-5 text-muted-foreground">Avenue Montaigne, Paris.</p></div><div className="grid content-start gap-3"><span>Customer care</span><span className="text-muted-foreground">Contact</span><span className="text-muted-foreground">Shipping & returns</span><span className="text-muted-foreground">Size guide</span></div><div><span>Newsletter</span><div className="mt-4 flex border-b border-foreground"><input aria-label="Email address" type="email" placeholder="EMAIL ADDRESS" className="h-10 min-w-0 flex-1 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"/><Button variant="ghost" className="rounded-none px-2 text-[10px] font-semibold uppercase">Join</Button></div></div></footer>;
+}
+function FreeShippingBar({ count }: { count: number }) {
+  const { remaining, unlocked, percent } = freeShippingProgress(count);
+  return <div className="border-b border-border py-4">
+    <p className="text-[10px] font-semibold uppercase tracking-[0.12em]">{unlocked ? "You've unlocked free shipping" : `Add ${remaining} more ${remaining === 1 ? "item" : "items"} for free shipping`}</p>
+    <div className="mt-2.5 h-[3px] w-full overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-foreground transition-[width] duration-700 ease-out" style={{ width: `${percent}%` }} /></div>
+  </div>;
 }
