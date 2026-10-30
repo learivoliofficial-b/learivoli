@@ -42,7 +42,7 @@ export function ClothingRail({ items }: { items: RailItem[] }) {
       </div>
       <div className="scrollbar-none overflow-x-auto overflow-y-hidden">
         <div className="relative mx-auto w-max min-w-full px-6 pb-4 pt-8 md:px-12">
-          <div className="absolute inset-x-6 top-8 h-[3px] rounded-full bg-rail-bar md:inset-x-12" />
+          <div className="pointer-events-none absolute inset-x-6 top-[38px] z-10 h-[3px] rounded-full bg-rail-bar md:inset-x-12" />
           <ul className="relative flex justify-center pt-0">
             {items.map((item) => {
               const isActive = active === item.id;
