@@ -35,6 +35,9 @@ function ProductPage() {
   const [notice, setNotice] = useState("");
   const inlineButtonRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const [slide, setSlide] = useState(0);
+  const onGalleryScroll = () => { const el = galleryRef.current; if (el) setSlide(Math.round(el.scrollLeft / Math.max(1, el.clientWidth))); };
   const addItem = useCartStore((state) => state.addItem);
   const isLoading = useCartStore((state) => state.isLoading);
 
@@ -88,10 +91,13 @@ function ProductPage() {
         {showcase.map((image, index) => <div key={image.url} className="flex h-[calc(100svh-107px)] items-center justify-center"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} className={`max-h-[78%] w-auto max-w-full object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
       </div>
 
-      {/* Mobile: first image full square */}
+      {/* Mobile: swipe sideways between full-square photos */}
       <div className="relative lg:hidden">
         <Link to="/" aria-label="Back to the rail" className="absolute left-3 top-3 z-10 grid size-9 place-items-center rounded-full bg-background/80"><ChevronLeft className="size-4" /></Link>
-        {showcase[0] && <div className="aspect-square w-full overflow-hidden"><img src={showcase[0].url} alt={showcase[0].altText ?? product.title} className="size-full scale-[1.18] object-cover" /></div>}
+        <div ref={galleryRef} onScroll={onGalleryScroll} className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain">
+          {showcase.map((image, index) => <div key={image.url} className="aspect-square w-full shrink-0 snap-center snap-always overflow-hidden"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} draggable={false} className={`size-full object-cover ${index === 0 ? "scale-[1.18]" : ""}`} /></div>)}
+        </div>
+        {showcase.length > 1 && <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 justify-center gap-1.5 rounded-full bg-background/80 px-2 py-1.5" aria-hidden>{showcase.map((image, index) => <span key={image.url} className={`h-1.5 rounded-full transition-all duration-300 ${index === slide ? "w-6 bg-foreground" : "w-1.5 bg-foreground/30"}`} />)}</div>}
       </div>
 
       {/* Right: price, options, add to cart — stays put on desktop */}
@@ -106,10 +112,6 @@ function ProductPage() {
         <div className="product-description space-y-1 break-words text-[11px] leading-5 text-muted-foreground lg:hidden" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
       </div>
 
-      {/* Mobile: remaining images stacked, each a full square */}
-      <div className="mt-8 grid gap-px lg:hidden">
-        {showcase.slice(1).map((image, index) => <img key={image.url} src={image.url} alt={image.altText ?? `${product.title} view ${index + 2}`} loading="lazy" className="aspect-square w-full object-cover" />)}
-      </div>
     </section>
     <SocialProofCarousel />
     <section className="border-t border-border bg-background">

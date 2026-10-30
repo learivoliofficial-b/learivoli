@@ -176,13 +176,48 @@
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
-@keyframes garment-sway {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(3.5deg); }
-  50% { transform: rotate(-2.5deg); }
-  75% { transform: rotate(1.2deg); }
+/* Clothing rail: realistic hanger motion. All pivot around the hanger hook. */
+@keyframes garment-swing {
+  0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.3, 0, 0.4, 1); }
+  14% { transform: rotate(calc(var(--dir, 1) * 4.2deg)); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  34% { transform: rotate(calc(var(--dir, 1) * -2.8deg)); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  52% { transform: rotate(calc(var(--dir, 1) * 1.7deg)); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  69% { transform: rotate(calc(var(--dir, 1) * -0.9deg)); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  85% { transform: rotate(calc(var(--dir, 1) * 0.35deg)); }
   100% { transform: rotate(0deg); }
 }
+/* Fabric lags behind the hanger: the hem trails the swing slightly. */
+@keyframes garment-cloth {
+  0% { transform: skewX(0deg); }
+  18% { transform: skewX(calc(var(--dir, 1) * -1.6deg)); }
+  38% { transform: skewX(calc(var(--dir, 1) * 1.1deg)); }
+  57% { transform: skewX(calc(var(--dir, 1) * -0.6deg)); }
+  76% { transform: skewX(calc(var(--dir, 1) * 0.25deg)); }
+  100% { transform: skewX(0deg); }
+}
+/* A soft draft in the room, so the rail never looks frozen. */
+@keyframes garment-idle {
+  0% { transform: rotate(-0.45deg); }
+  100% { transform: rotate(0.55deg); }
+}
+/* Garments slide along the rail into place, then settle. */
+@keyframes garment-arrive {
+  0% { opacity: 0; transform: translateX(70px) rotate(-4deg); }
+  55% { opacity: 1; transform: translateX(-3px) rotate(2.2deg); }
+  75% { transform: translateX(1px) rotate(-1deg); }
+  90% { transform: rotate(0.35deg); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+/* The price tag dangles on its string and lags a bit more. */
+@keyframes garment-tag {
+  0% { transform: translateX(-115%) rotate(-6deg); }
+  100% { transform: translateX(-115%) rotate(-3deg); }
+}
+.garment-swing { animation: garment-swing 1.9s both; }
+.garment-cloth { animation: garment-cloth 1.9s 90ms ease-in-out both; }
+.garment-idle { animation: garment-idle 6.5s ease-in-out infinite alternate; }
+.garment-arrive { animation: garment-arrive 1.3s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.garment-tag { transform-origin: 90% 0; animation: garment-tag 3.2s ease-in-out infinite alternate; }
 .garment-drop { animation: garment-drop 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @keyframes garment-drop {
   0% { opacity: 0; transform: translateY(-28%) rotate(-2deg); }
@@ -190,7 +225,6 @@
   80% { transform: translateY(1.5%) rotate(0.6deg); }
   100% { opacity: 1; transform: translateY(0) rotate(0); }
 }
-.garment-sway { animation: garment-sway 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
