@@ -8,14 +8,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { parseDescription } from "@/lib/product-description";
 import { pickRailImages, RAIL_SIDE_TAG } from "@/lib/rail";
-import { formatMoney, getProductByHandle } from "@/lib/shopify";
+import { buildRecommendations, type Recommendation } from "@/lib/recommendations";
+import { formatMoney, getProductByHandle, getProducts } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
-    const product = await getProductByHandle(params.handle);
+    const [product, products] = await Promise.all([getProductByHandle(params.handle), getProducts()]);
     if (!product) throw notFound();
-    return product;
+    return { ...product, recommendations: buildRecommendations(products, product.handle) };
   },
   head: ({ loaderData }) => {
     const title = loaderData ? `${loaderData.title} — Léa Rivoli` : "Product unavailable — Léa Rivoli";
@@ -126,6 +127,7 @@ function ProductPage() {
       </div>
 
     </section>
+    <YouMayAlsoLike items={product.recommendations} />
     <SocialProofCarousel />
     <section className="border-t border-border bg-background">
       {images.at(-1) && <div className="mx-auto max-w-3xl"><img src={images.at(-1)?.url} alt={images.at(-1)?.altText ?? "The Léa Rivoli story"} className="aspect-[4/5] w-full object-cover" /></div>}
@@ -142,4 +144,22 @@ function ProductPage() {
     </div>
     <StoreFooter />
   </main>;
+}
+function YouMayAlsoLike({ items }: { items: Recommendation[] }) {
+  if (!items.length) return null;
+  return <section aria-labelledby="also-like" className="border-t border-border px-4 py-12 md:px-12 md:py-16">
+    <h2 id="also-like" className="mb-6 text-sm font-semibold uppercase md:mb-8">You may also like</h2>
+    <ul className="scrollbar-none -mx-4 flex scroll-px-4 snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:px-0">
+      {items.map((item) => {
+        const card = <>
+          <div className="aspect-[4/5] overflow-hidden bg-background"><img src={item.image} alt={item.title} loading="lazy" className="size-full object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-[1.04]" /></div>
+          <p className="mt-3 truncate text-[10px] font-semibold uppercase">{item.title}</p>
+          <p className="mt-1 text-[10px] uppercase text-muted-foreground">{item.price}</p>
+        </>;
+        return <li key={item.id} className="w-[44%] shrink-0 snap-start md:w-auto">
+          {item.handle ? <Link to="/product/$handle" params={{ handle: item.handle }} className="group block">{card}</Link> : <div className="group block">{card}</div>}
+        </li>;
+      })}
+    </ul>
+  </section>;
 }
