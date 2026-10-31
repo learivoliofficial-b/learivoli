@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KlassiskRouteImport } from './routes/klassisk'
+import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const KlassiskRoute = KlassiskRouteImport.update({
   path: '/klassisk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PoliciesSlugRoute = PoliciesSlugRouteImport.update({
+  id: '/policies/$slug',
+  path: '/policies/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
@@ -32,30 +38,34 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/klassisk': typeof KlassiskRoute
+  '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/klassisk': typeof KlassiskRoute
+  '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/klassisk': typeof KlassiskRoute
+  '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/klassisk' | '/product/$handle'
+  fullPaths: '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/klassisk' | '/product/$handle'
-  id: '__root__' | '/' | '/klassisk' | '/product/$handle'
+  to: '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
+  id: '__root__' | '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   KlassiskRoute: typeof KlassiskRoute
+  PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductHandleRoute: typeof ProductHandleRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KlassiskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/policies/$slug': {
+      id: '/policies/$slug'
+      path: '/policies/$slug'
+      fullPath: '/policies/$slug'
+      preLoaderRoute: typeof PoliciesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$handle': {
       id: '/product/$handle'
       path: '/product/$handle'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   KlassiskRoute: KlassiskRoute,
+  PoliciesSlugRoute: PoliciesSlugRoute,
   ProductHandleRoute: ProductHandleRoute,
 }
 export const routeTree = rootRouteImport
