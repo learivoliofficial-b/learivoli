@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { POLICIES } from "@/components/policies";
 import { ChevronLeft, ChevronRight, Menu, Minus, Plus, Search, ShoppingBag, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -125,7 +126,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 }
 
 export function StoreFooter() {
-  return <footer className="grid gap-12 border-t border-border px-6 py-14 text-[11px] uppercase md:grid-cols-3 md:px-10"><div><p className="max-w-xs normal-case leading-5 text-muted-foreground">Avenue Montaigne, Paris.</p></div><div className="grid content-start gap-3"><span>Customer care</span><Link to="/policies/$slug" params={{ slug: "shipping" }} className="text-muted-foreground hover:text-foreground">Shipping</Link><Link to="/policies/$slug" params={{ slug: "refund" }} className="text-muted-foreground hover:text-foreground">Returns & refunds</Link><Link to="/policies/$slug" params={{ slug: "privacy" }} className="text-muted-foreground hover:text-foreground">Privacy</Link><Link to="/policies/$slug" params={{ slug: "terms" }} className="text-muted-foreground hover:text-foreground">Terms</Link><span className="text-muted-foreground">Size guide</span></div><div><span>Newsletter</span><div className="mt-4 flex border-b border-foreground"><input aria-label="Email address" type="email" placeholder="EMAIL ADDRESS" className="h-10 min-w-0 flex-1 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"/><Button variant="ghost" className="rounded-none px-2 text-[10px] font-semibold uppercase">Join</Button></div></div></footer>;
+  return <footer className="grid gap-12 border-t border-border px-6 py-14 text-[11px] uppercase md:grid-cols-3 md:px-10"><div><p className="max-w-xs normal-case leading-5 text-muted-foreground">Avenue Montaigne, Paris.</p></div><div className="grid content-start gap-3"><span>Customer care</span><Link to="/policies/$slug" params={{ slug: "contact" }} className="text-muted-foreground hover:text-foreground">Contact</Link><span className="text-muted-foreground">Size guide</span></div><details className="group content-start"><summary className="flex cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden">Policies<span className="transition-transform group-open:rotate-45">+</span></summary><div className="mt-4 grid gap-3">{Object.entries(POLICIES).map(([slug, p]) => <Link key={slug} to="/policies/$slug" params={{ slug }} className="text-muted-foreground hover:text-foreground">{p.title}</Link>)}</div></details></footer>;
 }
 function FreeShippingBar({ count }: { count: number }) {
   const { remaining, unlocked, percent } = freeShippingProgress(count);

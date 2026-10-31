@@ -3,7 +3,6 @@ import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import brandLogo from "@/assets/logowithslogo-2.png";
-import { PolicyContact } from "@/components/policies";
 import { SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -138,7 +137,6 @@ function ProductPage() {
         <img src={brandLogo} alt="Léa Rivoli — L’Art de vivre." className="mx-auto mt-12 w-72 md:w-96" />
       </div>
     </section>
-    <PolicyContact />
     <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
       <div className="px-4">
         <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? <>Add to cart — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
