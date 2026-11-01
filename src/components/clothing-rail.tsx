@@ -170,7 +170,7 @@ export function formatParisClock(date: Date) {
   };
 }
 
-function ParisClock() {
+export function ParisClock({ className = "border-b border-border text-muted-foreground" }: { className?: string }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     setNow(new Date());
@@ -179,11 +179,11 @@ function ParisClock() {
   }, []);
   const clock = now ? formatParisClock(now) : null;
   return (
-    <div className="flex h-9 shrink-0 items-center justify-center gap-3 border-b border-border text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground md:h-11 md:gap-5 md:text-[11px]">
+    <div className={`flex h-9 shrink-0 items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.14em] md:h-11 md:gap-5 md:text-[11px] ${className}`}>
       <span>Paris</span>
-      <span aria-hidden className="h-3.5 w-px bg-border" />
+      <span aria-hidden className="h-3.5 w-px bg-current opacity-30" />
       <time dateTime={now?.toISOString()} className={`transition-opacity duration-500 ${clock ? "opacity-100" : "opacity-0"}`}>{clock?.day ?? "\u00a0"}</time>
-      <span aria-hidden className="h-3.5 w-px bg-border" />
+      <span aria-hidden className="h-3.5 w-px bg-current opacity-30" />
       <span className={`tabular-nums transition-opacity duration-500 ${clock ? "opacity-100" : "opacity-0"}`}>{clock?.time ?? "00:00"}</span>
     </div>
   );

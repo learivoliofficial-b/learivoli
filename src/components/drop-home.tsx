@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
+import { ParisClock } from "@/components/clothing-rail";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import homeHero from "@/assets/home-hero.webp";
@@ -19,6 +20,7 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
     <section className="relative -mt-[76px] h-svh min-h-[560px] overflow-hidden bg-ink">
       {hero && <picture><source media="(max-width: 767px)" srcSet={heroImage ? hero : homeHeroMobile} /><img src={hero} alt="Léa Rivoli new drop" className="absolute inset-0 size-full object-cover" /></picture>}
       <div className="absolute inset-0 bg-image-shade" />
+      <div className="absolute inset-x-0 top-[76px] z-10"><ParisClock className="text-image-foreground" /></div>
       <h1 className="sr-only">Léa Rivoli</h1>
       <div className="absolute bottom-8 left-6 text-image-foreground md:bottom-10 md:left-10">
         <p className="text-[11px] font-semibold uppercase">New drop out now</p>
