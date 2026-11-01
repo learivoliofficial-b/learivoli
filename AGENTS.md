@@ -13,3 +13,4 @@
 - Use Shopify Storefront API cart mutations as the only purchase path so inventory, variants, and checkout stay authoritative.
 - Store brand images as real files in src/assets imported via Vite, never `/__l5e` asset pointers — the site is also deployed on Vercel, where those URLs don't exist.
 - Start page layouts live as separate components, each also kept at its own noindex route; `src/lib/home-layout.ts` picks which one "/" shows, so switching never deletes a layout.
+- Production deploys to Vercel via .github/workflows/deploy-vercel.yml (Vercel CLI on push to main), because the Vercel Hobby account cannot link the repo's GitHub account directly.
