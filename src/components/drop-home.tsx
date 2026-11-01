@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import homeHero from "@/assets/home-hero.webp";
+import homeHeroMobile from "@/assets/home-hero-mobile.webp";
 import footerLogo from "@/assets/footer-logo.png";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
@@ -16,7 +17,7 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
   return <main className="min-h-screen bg-background text-foreground">
     <StoreHeader />
     <section className="relative -mt-[76px] h-svh min-h-[560px] overflow-hidden bg-ink">
-      {hero && <img src={hero} alt="Léa Rivoli new drop" className="absolute inset-0 size-full object-cover" />}
+      {hero && <picture><source media="(max-width: 767px)" srcSet={heroImage ? hero : homeHeroMobile} /><img src={hero} alt="Léa Rivoli new drop" className="absolute inset-0 size-full object-cover" /></picture>}
       <div className="absolute inset-0 bg-image-shade" />
       <h1 className="sr-only">Léa Rivoli</h1>
       <div className="absolute bottom-8 left-6 text-image-foreground md:bottom-10 md:left-10">
