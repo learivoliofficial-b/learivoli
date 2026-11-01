@@ -92,7 +92,7 @@ function ProductPage() {
   const descriptionBlock = <div className="text-left">
     {parsed.intro.length > 0 && <div className="space-y-3 break-words text-[11px] leading-5 text-muted-foreground">{parsed.intro.map((line) => <p key={line}>{line}</p>)}</div>}
     <Accordion type="single" collapsible className="mt-5 border-t border-border">
-      {[...parsed.sections, { title: "Shipping", lines: ["Order processing: 1–3 days", "Delivery: 3–12 days after processing, depending on country", "Tracking included on all orders"] }].map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
+      {[...parsed.sections, { title: "Shipping", lines: ["Order processing: 1–3 days", "Delivery: 3–12 days after processing, depending on country", "Tracking included on all orders", "Import duties covered — no extra fees on delivery"] }].map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
         <AccordionTrigger className="py-3 text-[10px] font-semibold uppercase tracking-[0.12em] hover:no-underline [&>svg]:size-3.5">{section.title}</AccordionTrigger>
         <AccordionContent><ul className="space-y-1 pb-1 text-[11px] leading-5 text-muted-foreground">{section.lines.map((line) => <li key={line}>{line}</li>)}</ul></AccordionContent>
       </AccordionItem>)}
@@ -123,7 +123,7 @@ function ProductPage() {
         <div className="lg:hidden"><h1 className="text-lg font-semibold uppercase leading-tight">{product.title}</h1><p className="mt-1 text-sm">{price}</p></div>
         <p className="hidden text-sm lg:block">{price}</p>
         {pickers}
-        <div className="space-y-2">{addButton}<p className="text-center text-[10px] text-muted-foreground">14-day returns</p></div>
+        <div className="space-y-2">{addButton}<p className="text-center text-[10px] text-muted-foreground">14-day returns · Import duties covered</p></div>
         {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
         <div className="pt-2 lg:hidden">{descriptionBlock}</div>
       </div>
