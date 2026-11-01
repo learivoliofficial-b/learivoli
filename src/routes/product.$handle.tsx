@@ -86,7 +86,7 @@ function ProductPage() {
   const sizeChart = getSizeChart(product);
   const pickers = <div className="space-y-2.5">{sizeChart && <div className="flex justify-end"><SizeChartDialog chart={sizeChart} selectedSize={sizeOptions ? selected[sizeOptions.name] : undefined} /></div>}{colorOptions && dropdown(colorOptions)}{sizeOptions && dropdown(sizeOptions)}{otherOptions.map(dropdown)}</div>;
   const missing = product.options.find((option) => !selected[option.name]);
-  const addButton = <Button ref={inlineButtonRef} className="h-12 w-full rounded-none text-[11px] font-semibold uppercase tracking-[0.12em]" disabled={Boolean(missing) || !variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? "Add to bag" : "Sold out"}</Button>;
+  const addButton = <Button ref={inlineButtonRef} className="h-12 w-full rounded-none border border-primary text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-background hover:text-foreground" disabled={Boolean(missing) || !variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? "Add to bag" : "Sold out"}</Button>;
 
   const parsed = parseDescription(product.descriptionHtml || product.description);
   const descriptionBlock = <div className="text-left">
@@ -145,7 +145,7 @@ function ProductPage() {
     </section>
     <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
       <div className="px-4">
-        <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? <>Add to bag — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
+        <Button className="h-13 w-full rounded-none border border-primary uppercase transition-colors hover:bg-background hover:text-foreground" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? <>Add to bag — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
       </div>
     </div>
     <StoreFooter />
