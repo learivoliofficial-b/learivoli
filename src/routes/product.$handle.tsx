@@ -113,13 +113,9 @@ function ProductPage() {
         {showcase.map((image, index) => <div key={image.url} className="flex h-[calc(100svh-107px)] items-center justify-center"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} className={`max-h-[92%] w-auto max-w-full object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
       </div>
 
-      {/* Mobile: swipe sideways between full-square photos */}
-      <div className="relative lg:hidden">
-        <Link to="/" aria-label="Back to the rail" className="absolute left-3 top-3 z-10 grid size-9 place-items-center rounded-full bg-background/80"><ChevronLeft className="size-4" /></Link>
-        <div ref={galleryRef} onScroll={onGalleryScroll} className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain">
-          {showcase.map((image, index) => <div key={image.url} className="aspect-[4/5] w-full shrink-0 snap-center snap-always overflow-hidden"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} draggable={false} className="size-full object-cover" /></div>)}
-        </div>
-        {showcase.length > 1 && <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 justify-center gap-1.5 rounded-full bg-background/80 px-2 py-1.5" aria-hidden>{showcase.map((image, index) => <span key={image.url} className={`h-1.5 rounded-full transition-all duration-300 ${index === slide ? "w-6 bg-foreground" : "w-1.5 bg-foreground/30"}`} />)}</div>}
+      {/* Mobile: photos stacked, scroll down to see them */}
+      <div ref={galleryRef} onScroll={onGalleryScroll} className="flex flex-col gap-1 lg:hidden">
+        {showcase.map((image, index) => <div key={image.url} className="aspect-[4/5] w-full overflow-hidden"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} draggable={false} className="size-full object-cover" /></div>)}
       </div>
 
       {/* Right: price, options, add to cart — stays put on desktop */}
