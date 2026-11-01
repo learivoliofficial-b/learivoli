@@ -84,10 +84,9 @@ function ProductPage() {
     <SelectContent className="rounded-none">{option.values.map((value) => <SelectItem key={value} value={value} className="rounded-none text-xs">{value}</SelectItem>)}</SelectContent>
   </Select>;
   const sizeChart = getSizeChart(product);
-  const sizeChart = getSizeChart(product);
   const pickers = <div className="space-y-2.5">{sizeChart && <div className="flex justify-end"><SizeChartDialog chart={sizeChart} selectedSize={sizeOptions ? selected[sizeOptions.name] : undefined} /></div>}{colorOptions && dropdown(colorOptions)}{sizeOptions && dropdown(sizeOptions)}{otherOptions.map(dropdown)}</div>;
   const missing = product.options.find((option) => !selected[option.name]);
-  const addButton = <Button ref={inlineButtonRef} className="h-12 w-full rounded-none text-[11px] font-semibold uppercase tracking-[0.12em]" disabled={Boolean(missing) || (variant && !variant.availableForSale) || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? "Add to bag" : "Sold out"}</Button>;
+  const addButton = <Button ref={inlineButtonRef} className="h-12 w-full rounded-none text-[11px] font-semibold uppercase tracking-[0.12em]" disabled={Boolean(missing) || !variant?.availableForSale || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? "Add to bag" : "Sold out"}</Button>;
 
   const parsed = parseDescription(product.descriptionHtml || product.description);
   const descriptionBlock = <div className="text-left">
