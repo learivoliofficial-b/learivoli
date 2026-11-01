@@ -1,7 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
 import { StoreFooter, StoreHeader } from "@/components/storefront";
+import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
+
+/** Background-free product photos kept in the project until Shopify has cut-outs. */
+const cutouts: Record<string, string> = { "l-ange-gardien-t-shirt": tshirtCutout };
 
 /** Start page layout: full-screen hero, New Arrivals row, giant wordmark footer. */
 export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; heroImage?: string }) {
@@ -25,7 +29,7 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
         {products.map((product) => {
           const image = product.images.edges[0]?.node;
           return <Link key={product.id} to="/product/$handle" params={{ handle: product.handle }} className="group">
-            <div className="aspect-square overflow-hidden">{image && <img src={image.url} alt={image.altText ?? product.title} className="size-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.03]" />}</div>
+            <div className="aspect-square overflow-hidden">{(cutouts[product.handle] ?? image) && <img src={cutouts[product.handle] ?? image?.url} alt={image?.altText ?? product.title} className="size-full object-contain p-6 mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.03]" />}</div>
             <h3 className="mt-4 text-xs font-semibold uppercase md:text-sm">{product.title}</h3>
             <p className="mt-1.5 text-xs text-muted-foreground md:text-sm">{formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</p>
           </Link>;
