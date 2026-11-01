@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import homeHero from "@/assets/home-hero.webp";
+import footerLogo from "@/assets/footer-logo.png";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
 /** Background-free product photos kept in the project until Shopify has cut-outs. */
@@ -38,6 +39,6 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
       </div>
     </section>
     <StoreFooter />
-    <p aria-hidden className="overflow-hidden whitespace-nowrap px-2 pb-2 text-center text-[16vw] font-bold uppercase leading-[0.85] tracking-tight">Léa Rivoli</p>
+    <div className="px-2 pb-2"><img src={footerLogo} alt="Léa Rivoli" className="mx-auto block h-auto w-full" /></div>
   </main>;
 }
