@@ -10,7 +10,7 @@ export function SizeChartDialog({ chart, selectedSize }: { chart: SizeChart; sel
     <DialogTrigger className="inline-flex items-center gap-1 text-[9px] font-normal uppercase underline underline-offset-2 text-muted-foreground hover:text-foreground">
       <Ruler className="size-3" />Size chart
     </DialogTrigger>
-    <DialogContent className="max-h-[90svh] w-[calc(100%-1.5rem)] max-w-lg overflow-y-auto rounded-none p-5 sm:p-8">
+    <DialogContent className="max-h-[90svh] w-[calc(100%-1.5rem)] max-w-lg grid-cols-[minmax(0,1fr)] overflow-y-auto rounded-none p-5 sm:p-8">
       <DialogHeader className="text-left">
         <DialogTitle className="text-sm font-semibold uppercase tracking-[0.12em]">Size chart</DialogTitle>
         <DialogDescription className="text-[11px]">Measured on the garment laid flat. Allow ±1–2 cm.</DialogDescription>
