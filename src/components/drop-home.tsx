@@ -1,7 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
 import { StoreFooter, StoreHeader } from "@/components/storefront";
+import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
+
+/** Background-free product photos kept in the project until Shopify has cut-outs. */
+const cutouts: Record<string, string> = { "l-ange-gardien-t-shirt": tshirtCutout };
 
 /** Start page layout: full-screen hero, New Arrivals row, giant wordmark footer. */
 export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; heroImage?: string }) {
@@ -21,13 +25,13 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
     <section id="new-arrivals" className="px-4 py-12 md:px-10 md:py-16">
       <h2 className="text-sm font-semibold uppercase">New arrivals</h2>
       <p className="mt-1 text-[11px] text-muted-foreground">The latest pieces from Léa Rivoli.</p>
-      <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-8">
         {products.map((product) => {
           const image = product.images.edges[0]?.node;
           return <Link key={product.id} to="/product/$handle" params={{ handle: product.handle }} className="group">
-            <div className="aspect-[4/5] overflow-hidden bg-background">{image && <img src={image.url} alt={image.altText ?? product.title} className="size-full object-contain transition-transform duration-700 group-hover:scale-[1.03]" />}</div>
-            <h3 className="mt-3 text-[10px] font-semibold uppercase md:text-[11px]">{product.title}</h3>
-            <p className="mt-1 text-[10px] text-muted-foreground">{formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</p>
+            <div className="aspect-square overflow-hidden">{(cutouts[product.handle] ?? image) && <img src={cutouts[product.handle] ?? image?.url} alt={image?.altText ?? product.title} className="size-full object-contain p-6 mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.03]" />}</div>
+            <h3 className="mt-4 text-xs font-semibold uppercase md:text-sm">{product.title}</h3>
+            <p className="mt-1.5 text-xs text-muted-foreground md:text-sm">{formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</p>
           </Link>;
         })}
       </div>
