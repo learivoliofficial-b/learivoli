@@ -91,12 +91,12 @@ function ProductPage() {
   const parsed = parseDescription(product.descriptionHtml || product.description);
   const descriptionBlock = <div className="text-left">
     {parsed.intro.length > 0 && <div className="space-y-3 break-words text-[11px] leading-5 text-muted-foreground">{parsed.intro.map((line) => <p key={line}>{line}</p>)}</div>}
-    {parsed.sections.length > 0 && <Accordion type="single" collapsible className="mt-5 border-t border-border">
-      {parsed.sections.map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
+    <Accordion type="single" collapsible className="mt-5 border-t border-border">
+      {[...parsed.sections, { title: "Shipping", lines: ["Order processing: 1–3 days", "Delivery: 5–12 days after processing", "Tracking included on all orders"] }].map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
         <AccordionTrigger className="py-3 text-[10px] font-semibold uppercase tracking-[0.12em] hover:no-underline [&>svg]:size-3.5">{section.title}</AccordionTrigger>
         <AccordionContent><ul className="space-y-1 pb-1 text-[11px] leading-5 text-muted-foreground">{section.lines.map((line) => <li key={line}>{line}</li>)}</ul></AccordionContent>
       </AccordionItem>)}
-    </Accordion>}
+    </Accordion>
   </div>;
 
   return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
