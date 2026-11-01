@@ -92,7 +92,7 @@ function ProductPage() {
   </div>;
 
   return <main className="min-h-screen bg-rail pb-20 text-foreground lg:pb-0"><StoreHeader />
-    <section className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-8 lg:px-12">
+    <section className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-8 lg:px-12">
       {/* Left: back, title, description — stays put while the images scroll */}
       <div className="hidden lg:sticky lg:top-[107px] lg:flex lg:h-[calc(100svh-107px)] lg:min-w-0 lg:flex-col lg:justify-center">
         <Link to="/" className="inline-flex items-center gap-1 text-[10px] uppercase text-muted-foreground hover:text-foreground"><ChevronLeft className="size-3" />Back</Link>
@@ -102,7 +102,7 @@ function ProductPage() {
 
       {/* Center: images stacked, scroll down to see more */}
       <div className="hidden min-w-0 lg:block">
-        {showcase.map((image, index) => <div key={image.url} className="flex h-[calc(100svh-107px)] items-center justify-center"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} className={`max-h-[78%] w-auto max-w-full object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
+        {showcase.map((image, index) => <div key={image.url} className="flex h-[calc(100svh-107px)] items-center justify-center"><img src={image.url} alt={image.altText ?? `${product.title} view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} className={`max-h-[92%] w-auto max-w-full object-contain brightness-[1.05] ${index === 0 ? "garment-drop" : ""}`} /></div>)}
       </div>
 
       {/* Mobile: swipe sideways between full-square photos */}
