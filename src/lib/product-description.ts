@@ -1,5 +1,5 @@
 export type DescriptionSection = { title: string; lines: string[] };
-export type ParsedDescription = { intro: string[]; sections: DescriptionSection[] };
+export type ParsedDescription = { intro: string[]; sections: DescriptionSection[]; closing: string[] };
 
 const HEADINGS = ["details", "care instructions", "care instruction", "care"];
 
@@ -10,6 +10,7 @@ const decode = (text: string) =>
 export function parseDescription(html: string): ParsedDescription {
   const blocks = html.match(/<(p|li|h[1-6])[^>]*>[\s\S]*?<\/\1>/gi) ?? [];
   const intro: string[] = [];
+  const closing: string[] = [];
   const sections: DescriptionSection[] = [];
   let current: DescriptionSection | null = null;
   for (const block of blocks) {
@@ -21,8 +22,8 @@ export function parseDescription(html: string): ParsedDescription {
       continue;
     }
     if (current) current.lines.push(text);
-    else intro.push(text);
+    else (sections.length ? closing : intro).push(text);
   }
   if (!blocks.length && html.trim()) intro.push(decode(html.replace(/<[^>]+>/g, "")).trim());
-  return { intro, sections: sections.filter((s) => s.lines.length) };
+  return { intro, closing, sections: sections.filter((s) => s.lines.length) };
 }

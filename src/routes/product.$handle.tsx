@@ -86,7 +86,7 @@ function ProductPage() {
 
   const parsed = parseDescription(product.descriptionHtml || product.description);
   const descriptionBlock = <div className="text-left">
-    {parsed.intro.length > 0 && <p className="line-clamp-4 break-words text-[11px] leading-5 text-muted-foreground lg:line-clamp-5">{parsed.intro[0]}</p>}
+    {parsed.intro.length > 0 && <div className="space-y-3 break-words text-[11px] leading-5 text-muted-foreground">{parsed.intro.map((line) => <p key={line}>{line}</p>)}</div>}
     {parsed.sections.length > 0 && <Accordion type="single" collapsible className="mt-5 border-t border-border">
       {parsed.sections.map((section) => <AccordionItem key={section.title} value={section.title} className="border-border">
         <AccordionTrigger className="py-3 text-[10px] font-semibold uppercase tracking-[0.12em] hover:no-underline [&>svg]:size-3.5">{section.title}</AccordionTrigger>

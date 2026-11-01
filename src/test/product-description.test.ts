@@ -11,7 +11,9 @@ describe("parseDescription", () => {
       { title: "Care Instructions", lines: ["Machine wash cold"] },
     ]);
   });
-  it("keeps text outside the sections as intro", () => {
-    expect(parseDescription(html).intro).toEqual(["Intro text.", "Closing line."]);
+  it("keeps text before the sections as intro and after as closing", () => {
+    const parsed = parseDescription(html);
+    expect(parsed.intro).toEqual(["Intro text."]);
+    expect(parsed.closing).toEqual(["Closing line."]);
   });
 });
