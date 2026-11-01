@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import tshirtCutout from "@/assets/tshirt-cutout.webp";
+import homeHero from "@/assets/home-hero.webp";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
 /** Background-free product photos kept in the project until Shopify has cut-outs. */
@@ -10,7 +11,7 @@ const cutouts: Record<string, string> = { "l-ange-gardien-t-shirt": tshirtCutout
 /** Start page layout: full-screen hero, New Arrivals row, giant wordmark footer. */
 export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; heroImage?: string }) {
   const lead = products[0];
-  const hero = heroImage ?? lead?.images.edges[1]?.node.url ?? lead?.images.edges[0]?.node.url;
+  const hero = heroImage ?? homeHero ?? lead?.images.edges[0]?.node.url;
   return <main className="min-h-screen bg-background text-foreground">
     <StoreHeader />
     <section className="relative -mt-[76px] h-svh min-h-[560px] overflow-hidden bg-ink">
