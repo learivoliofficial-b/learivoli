@@ -7,6 +7,7 @@ import ourStoryImage from "@/assets/our-story.jpg";
 import { SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SizeChartDialog } from "@/components/size-chart-dialog";
 import { parseDescription } from "@/lib/product-description";
 import { getSizeChart } from "@/lib/size-chart";
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/product/$handle")({
 
 function ProductPage() {
   const product = Route.useLoaderData();
-  const [selected, setSelected] = useState<Record<string,string>>(() => Object.fromEntries(product.options.map((option) => [option.name, option.values[0] ?? ""])));
+  const [selected, setSelected] = useState<Record<string,string>>(() => Object.fromEntries(product.options.map((option) => [option.name, option.values.length === 1 ? option.values[0] ?? "" : ""])));
   const [notice, setNotice] = useState("");
   const inlineButtonRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -78,11 +79,15 @@ function ProductPage() {
   const showcase = [frontImage, ...images.filter((image) => image !== frontImage && !image.altText?.toLowerCase().includes(RAIL_SIDE_TAG))].filter((image): image is NonNullable<typeof image> => Boolean(image));
   const price = variant ? formatMoney(variant.price.amount, variant.price.currencyCode) : formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
 
-  const colorPicker = colorOptions && <fieldset><legend className="mb-2 text-[9px] font-semibold uppercase">Color: <span className="font-normal text-muted-foreground">{selected[colorOptions.name]}</span></legend><div className="flex flex-wrap gap-2 lg:justify-end">{colorOptions.values.map((color) => { const image = colorImages[color]; const isSelected = selected[colorOptions.name] === color; return <Button key={color} type="button" variant="ghost" aria-label={`Select ${color}`} aria-pressed={isSelected} className="h-auto w-12 rounded-none p-0 hover:bg-transparent" onClick={() => setSelected((current) => ({ ...current, [colorOptions.name]: color }))}><span className={`block aspect-square w-full overflow-hidden border bg-muted ${isSelected ? "border-foreground ring-1 ring-foreground" : "border-border"}`}>{image && <img src={image.url} alt={`${color} ${product.title}`} className="size-full object-contain" />}</span></Button>; })}</div></fieldset>;
+  const dropdown = (option: { name: string; values: string[] }) => <Select key={option.name} value={selected[option.name] || undefined} onValueChange={(value) => setSelected((current) => ({ ...current, [option.name]: value }))}>
+    <SelectTrigger aria-label={`Select ${option.name}`} className="h-12 w-full rounded-none border-border bg-background px-4 text-xs shadow-none focus:ring-1 focus:ring-foreground"><SelectValue placeholder={`Select ${option.name}`} /></SelectTrigger>
+    <SelectContent className="rounded-none">{option.values.map((value) => <SelectItem key={value} value={value} className="rounded-none text-xs">{value}</SelectItem>)}</SelectContent>
+  </Select>;
   const sizeChart = getSizeChart(product);
-  const sizePicker = sizeOptions && <fieldset><legend className="mb-2 flex w-full items-center justify-between gap-3 text-[9px] font-semibold uppercase"><span>Size <span className="font-normal text-muted-foreground">{selected[sizeOptions.name]}</span></span>{sizeChart && <SizeChartDialog chart={sizeChart} selectedSize={selected[sizeOptions.name]} />}</legend><div className="flex flex-wrap gap-1.5 lg:justify-end">{sizeOptions.values.map((size) => { const isSelected = selected[sizeOptions.name] === size; return <Button key={size} type="button" variant="outline" aria-pressed={isSelected} className={`size-10 rounded-none border bg-background p-0 text-[10px] uppercase shadow-none ${isSelected ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-border hover:border-foreground hover:bg-background"}`} onClick={() => setSelected((current) => ({ ...current, [sizeOptions.name]: size }))}>{size}</Button>; })}</div></fieldset>;
-  const otherPickers = otherOptions.map((option) => <fieldset key={option.name}><legend className="mb-2 text-[9px] font-semibold uppercase">{option.name}</legend><div className="flex flex-wrap gap-1.5 lg:justify-end">{option.values.map((value) => <Button key={value} type="button" variant={selected[option.name] === value ? "default" : "outline"} className="h-10 min-w-10 rounded-none text-[10px] uppercase" onClick={() => setSelected((current) => ({ ...current, [option.name]: value }))}>{value}</Button>)}</div></fieldset>);
-  const addButton = <Button ref={inlineButtonRef} className="h-11 w-full rounded-none text-[10px] uppercase" disabled={!variant?.availableForSale || isLoading} onClick={() => void handleAdd()}><ShoppingBag className="size-3.5" />{isLoading ? "Adding…" : variant?.availableForSale ? "Add to cart" : "Sold out"}</Button>;
+  const sizeChart = getSizeChart(product);
+  const pickers = <div className="space-y-2.5">{sizeChart && <div className="flex justify-end"><SizeChartDialog chart={sizeChart} selectedSize={sizeOptions ? selected[sizeOptions.name] : undefined} /></div>}{colorOptions && dropdown(colorOptions)}{sizeOptions && dropdown(sizeOptions)}{otherOptions.map(dropdown)}</div>;
+  const missing = product.options.find((option) => !selected[option.name]);
+  const addButton = <Button ref={inlineButtonRef} className="h-12 w-full rounded-none text-[11px] font-semibold uppercase tracking-[0.12em]" disabled={Boolean(missing) || (variant && !variant.availableForSale) || isLoading} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? "Add to bag" : "Sold out"}</Button>;
 
   const parsed = parseDescription(product.descriptionHtml || product.description);
   const descriptionBlock = <div className="text-left">
@@ -122,10 +127,8 @@ function ProductPage() {
       <div className="space-y-5 px-5 pt-6 lg:sticky lg:top-[107px] lg:ml-auto lg:flex lg:h-[calc(100svh-107px)] lg:w-full lg:max-w-[280px] lg:flex-col lg:justify-center lg:space-y-5 lg:px-0 lg:pt-0 lg:text-right">
         <div className="lg:hidden"><h1 className="text-lg font-semibold uppercase leading-tight">{product.title}</h1><p className="mt-1 text-sm">{price}</p></div>
         <p className="hidden text-sm lg:block">{price}</p>
-        {colorPicker}
-        {sizePicker}
-        {otherPickers}
-        {addButton}
+        {pickers}
+        <div className="space-y-2">{addButton}<p className="text-center text-[10px] text-muted-foreground">14-day returns</p></div>
         {notice && <p className="text-center text-xs lg:text-right" role="status">{notice}</p>}
         <div className="pt-2 lg:hidden">{descriptionBlock}</div>
       </div>
@@ -143,7 +146,7 @@ function ProductPage() {
     </section>
     <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${showStickyBar ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showStickyBar}>
       <div className="px-4">
-        <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : variant?.availableForSale ? <>Add to cart — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
+        <Button className="h-13 w-full rounded-none uppercase" disabled={!variant?.availableForSale || isLoading} tabIndex={showStickyBar ? 0 : -1} onClick={() => void handleAdd()}>{isLoading ? "Adding…" : missing ? `Select ${missing.name.toLowerCase()}` : variant?.availableForSale ? <>Add to bag — {formatMoney(variant.price.amount, variant.price.currencyCode)}</> : "Sold out"}</Button>
       </div>
     </div>
     <StoreFooter />
