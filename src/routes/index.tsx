@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ClothingRail } from "@/components/clothing-rail";
-import { StoreHeader } from "@/components/storefront";
-import { buildRailItems } from "@/lib/rail";
+import { DropHome } from "@/components/drop-home";
+import { ClassicHomeSections } from "@/components/home-sections";
+import { StoreFooter, StoreHeader } from "@/components/storefront";
+import { RailHome } from "@/components/rail-home";
+import { HOME_LAYOUT } from "@/lib/home-layout";
 import { getProducts } from "@/lib/shopify";
 
 export const Route = createFileRoute("/")({
@@ -25,8 +27,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const products = Route.useLoaderData();
-  return <main className="flex h-svh flex-col overflow-hidden bg-rail text-foreground"><StoreHeader />
-    <h1 className="sr-only">Léa Rivoli — Official Store</h1>
-    <ClothingRail items={buildRailItems(products)} />
-  </main>;
+  if (HOME_LAYOUT === "drop") return <DropHome products={products} />;
+  if (HOME_LAYOUT === "classic") return <main className="min-h-screen bg-background text-foreground"><StoreHeader /><ClassicHomeSections products={products} /><StoreFooter /></main>;
+  return <RailHome products={products} />;
 }
+
