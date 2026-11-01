@@ -27,7 +27,6 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
     </section>
     <section id="new-arrivals" className="px-4 py-12 md:px-10 md:py-16">
       <h2 className="text-center text-sm font-semibold uppercase">New arrivals</h2>
-      <p className="mt-1 text-center text-[11px] text-muted-foreground">The latest pieces from Léa Rivoli.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-10 md:gap-x-8">
         {products.map((product) => {
           const image = product.images.edges[0]?.node;
