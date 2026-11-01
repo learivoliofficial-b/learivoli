@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DropRouteImport } from './routes/drop'
+import { Route as GalgeRouteImport } from './routes/galge'
 import { Route as KlassiskRouteImport } from './routes/klassisk'
 import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
@@ -17,6 +19,16 @@ import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DropRoute = DropRouteImport.update({
+  id: '/drop',
+  path: '/drop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalgeRoute = GalgeRouteImport.update({
+  id: '/galge',
+  path: '/galge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KlassiskRoute = KlassiskRouteImport.update({
@@ -37,12 +49,16 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/drop': typeof DropRoute
+  '/galge': typeof GalgeRoute
   '/klassisk': typeof KlassiskRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/drop': typeof DropRoute
+  '/galge': typeof GalgeRoute
   '/klassisk': typeof KlassiskRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -50,20 +66,43 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/drop': typeof DropRoute
+  '/galge': typeof GalgeRoute
   '/klassisk': typeof KlassiskRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
+  fullPaths:
+    | '/'
+    | '/drop'
+    | '/galge'
+    | '/klassisk'
+    | '/policies/$slug'
+    | '/product/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
-  id: '__root__' | '/' | '/klassisk' | '/policies/$slug' | '/product/$handle'
+  to:
+    | '/'
+    | '/drop'
+    | '/galge'
+    | '/klassisk'
+    | '/policies/$slug'
+    | '/product/$handle'
+  id:
+    | '__root__'
+    | '/'
+    | '/drop'
+    | '/galge'
+    | '/klassisk'
+    | '/policies/$slug'
+    | '/product/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DropRoute: typeof DropRoute
+  GalgeRoute: typeof GalgeRoute
   KlassiskRoute: typeof KlassiskRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductHandleRoute: typeof ProductHandleRoute
@@ -76,6 +115,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drop': {
+      id: '/drop'
+      path: '/drop'
+      fullPath: '/drop'
+      preLoaderRoute: typeof DropRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galge': {
+      id: '/galge'
+      path: '/galge'
+      fullPath: '/galge'
+      preLoaderRoute: typeof GalgeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/klassisk': {
@@ -104,6 +157,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DropRoute: DropRoute,
+  GalgeRoute: GalgeRoute,
   KlassiskRoute: KlassiskRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductHandleRoute: ProductHandleRoute,
