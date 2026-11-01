@@ -79,7 +79,7 @@ function ProductPage() {
   const showcase = [frontImage, ...images.filter((image) => image !== frontImage && !image.altText?.toLowerCase().includes(RAIL_SIDE_TAG))].filter((image): image is NonNullable<typeof image> => Boolean(image));
   const price = variant ? formatMoney(variant.price.amount, variant.price.currencyCode) : formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
 
-  const dropdown = (option: { name: string; values: string[] }) => <Select key={option.name} value={selected[option.name] || undefined} onValueChange={(value) => setSelected((current) => ({ ...current, [option.name]: value }))}>
+  const dropdown = (option: { name: string; values: string[] }) => <Select key={option.name} value={selected[option.name] ?? ""} onValueChange={(value) => setSelected((current) => ({ ...current, [option.name]: value }))}>
     <SelectTrigger aria-label={`Select ${option.name}`} className="h-12 w-full rounded-none border-border bg-background px-4 text-xs shadow-none focus:ring-1 focus:ring-foreground"><SelectValue placeholder={`Select ${option.name}`} /></SelectTrigger>
     <SelectContent className="rounded-none">{option.values.map((value) => <SelectItem key={value} value={value} className="rounded-none text-xs">{value}</SelectItem>)}</SelectContent>
   </Select>;
