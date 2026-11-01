@@ -17,7 +17,7 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
     <section className="relative -mt-[76px] h-svh min-h-[560px] overflow-hidden bg-ink">
       {hero && <img src={hero} alt="Léa Rivoli new drop" className="absolute inset-0 size-full object-cover" />}
       <div className="absolute inset-0 bg-image-shade" />
-      <h1 className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 text-center text-[13vw] font-bold uppercase leading-none tracking-tight text-image-foreground md:text-[9vw]">Léa Rivoli</h1>
+      <h1 className="sr-only">Léa Rivoli</h1>
       <div className="absolute bottom-8 left-6 text-image-foreground md:bottom-10 md:left-10">
         <p className="text-[11px] font-semibold uppercase">New drop out now</p>
         <a href="#new-arrivals" className="mt-3 inline-block border border-current px-4 py-2 text-[10px] font-semibold uppercase transition-colors hover:bg-image-foreground hover:text-foreground">Shop all</a>
