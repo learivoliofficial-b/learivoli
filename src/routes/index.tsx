@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ClothingRail } from "@/components/clothing-rail";
 import { DropHome } from "@/components/drop-home";
 import { ClassicHomeSections } from "@/components/home-sections";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
+import { RailHome } from "@/components/rail-home";
 import { HOME_LAYOUT } from "@/lib/home-layout";
-import { buildRailItems } from "@/lib/rail";
 import { getProducts } from "@/lib/shopify";
 
 export const Route = createFileRoute("/")({
@@ -33,9 +32,3 @@ function Index() {
   return <RailHome products={products} />;
 }
 
-export function RailHome({ products }: { products: Awaited<ReturnType<typeof getProducts>> }) {
-  return <main className="flex h-svh flex-col overflow-hidden bg-rail text-foreground"><StoreHeader />
-    <h1 className="sr-only">Léa Rivoli — Official Store</h1>
-    <ClothingRail items={buildRailItems(products)} />
-  </main>;
-}
