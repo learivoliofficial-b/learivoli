@@ -3,6 +3,7 @@ import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import brandLogo from "@/assets/logowithslogo-2.png";
+import ourStoryImage from "@/assets/our-story.jpg";
 import { SocialProofCarousel, StoreFooter, StoreHeader } from "@/components/storefront";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -133,7 +134,7 @@ function ProductPage() {
     <YouMayAlsoLike items={product.recommendations} />
     <SocialProofCarousel />
     <section className="border-t border-border bg-background">
-      {images.at(-1) && <div className="mx-auto max-w-3xl"><img src={images.at(-1)?.url} alt={images.at(-1)?.altText ?? "The Léa Rivoli story"} className="aspect-[4/5] w-full object-cover" /></div>}
+      <div className="mx-auto max-w-3xl"><img src={ourStoryImage} alt="The Léa Rivoli story" loading="lazy" className="aspect-[3/4] w-full object-cover" /></div>
       <div className="mx-auto max-w-2xl px-6 py-16 text-center md:py-24">
         <h2 className="text-4xl uppercase md:text-5xl">Our Story</h2>
         <p className="mx-auto mt-5 max-w-xl font-serif text-base italic leading-7 text-muted-foreground">Life is not measured by what we have, but by what we remember. The places we discover, the people we meet, the moments we never want to forget. Léa Rivoli was created as a reminder to slow down, look around, and appreciate the beauty of simply being here. Because perhaps the finest things in life are not things at all. L’ART DE VIVRE.</p>
