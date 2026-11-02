@@ -154,7 +154,7 @@ function YouMayAlsoLike({ items }: { items: Recommendation[] }) {
     <ul className="scrollbar-none -mx-4 flex scroll-px-4 snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:px-0">
       {items.map((item) => {
         const card = <>
-          <div className="aspect-[4/5] overflow-hidden bg-muted"><img src={item.image} alt={item.title} loading="lazy" className="size-full object-contain p-6 mix-blend-multiply transition-transform duration-700 ease-out group-hover:scale-[1.04] md:p-10" /></div>
+          <div className="aspect-[4/5] overflow-hidden bg-muted"><img src={item.image} alt={item.title} loading="lazy" className="size-full object-contain p-4 mix-blend-multiply transition-transform duration-700 ease-out group-hover:scale-[1.04] md:p-6" /></div>
           <p className="mt-3 truncate text-[10px] font-semibold uppercase">{item.title}</p>
           <p className="mt-1 text-[10px] uppercase text-muted-foreground">{item.price}</p>
         </>;
