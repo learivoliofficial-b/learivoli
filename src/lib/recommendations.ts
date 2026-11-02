@@ -1,16 +1,13 @@
 import railCrewneckGrey from "@/assets/rail-crewneck-grey.webp";
 import railHoodieBlack from "@/assets/rail-hoodie-black.webp";
-import railHoodieCream from "@/assets/rail-hoodie-cream.webp";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
 export interface Recommendation { id: string; title: string; price: string; image: string; handle: string | null }
 
 /** Temporary made-up products shown until the Shopify store has enough real ones. */
 const demoProducts: Omit<Recommendation, "id">[] = [
-  { title: "Montmartre Hoodie — Cream", price: "899 kr", image: railHoodieCream, handle: null },
   { title: "Rive Gauche Zip Hoodie — Black", price: "999 kr", image: railHoodieBlack, handle: null },
   { title: "Saint-Germain Crewneck — Grey", price: "799 kr", image: railCrewneckGrey, handle: null },
-  { title: "Le Marais Hoodie — Cream", price: "899 kr", image: railHoodieCream, handle: null },
 ];
 
 /** Other real products first (never the one being viewed), topped up with demo products. */
