@@ -41,7 +41,7 @@ export function SizeChartDialog({ chart, selectedSize }: { chart: SizeChart; sel
             <span><span className="font-semibold">{row.label}: </span><span className="text-muted-foreground">{row.howTo}</span></span>
           </li>)}
         </ol>
-        <p className="mt-4 text-[11px] leading-5 text-muted-foreground">Tip: measure a T-shirt you already love and compare it with the chart.</p>
+        <p className="mt-4 text-[11px] leading-5 text-muted-foreground">Tip: measure a piece you already love and compare it with the chart.</p>
       </div>
     </DialogContent>
   </Dialog>;
