@@ -33,8 +33,13 @@ export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; 
       <div className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-10 md:gap-x-8">
         {products.map((product) => {
           const image = product.images.edges[0]?.node;
+          // Second Shopify image = the model photo, shown while hovering.
+          const model = product.images.edges[1]?.node;
           return <Link key={product.id} to="/product/$handle" params={{ handle: product.handle }} className="group w-[calc(50%-0.5rem)] text-center md:w-[calc(33.333%-1.5rem)]">
-            <div className="aspect-square overflow-hidden">{(cutouts[product.handle] ?? image) && <img src={cutouts[product.handle] ?? image?.url} alt={image?.altText ?? product.title} className="size-full object-contain p-4 mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.03]" />}</div>
+            <div className="relative aspect-square overflow-hidden">
+              {(cutouts[product.handle] ?? image) && <img src={cutouts[product.handle] ?? image?.url} alt={image?.altText ?? product.title} className={`size-full object-contain p-4 mix-blend-multiply transition-[opacity,transform] duration-500 ${model ? "group-hover:opacity-0" : "duration-700 group-hover:scale-[1.03]"}`} />}
+              {model && <img src={model.url} alt="" aria-hidden loading="lazy" className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />}
+            </div>
             <h3 className="mt-4 text-xs font-semibold uppercase md:text-sm">{product.title}</h3>
             <p className="mt-1.5 text-xs text-muted-foreground md:text-sm">{formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</p>
           </Link>;
