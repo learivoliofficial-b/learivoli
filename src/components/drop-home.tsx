@@ -4,13 +4,20 @@ import { ParisClock } from "@/components/clothing-rail";
 import { StoreFooter, StoreHeader } from "@/components/storefront";
 import tshirtCutout from "@/assets/tshirt-cutout.webp";
 import tshirtBlackCutout from "@/assets/tshirt-black-cutout.webp";
+import hoodieBlackCutout from "@/assets/hoodie-black-cutout.webp";
+import sweatpantsBlackCutout from "@/assets/sweatpants-black-cutout.webp";
 import homeHero from "@/assets/home-hero.webp";
 import homeHeroMobile from "@/assets/home-hero-mobile.webp";
 import footerLogo from "@/assets/footer-logo.png";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
 
 /** Background-free product photos kept in the project until Shopify has cut-outs. */
-const cutouts: Record<string, string> = { "l-ange-gardien-t-shirt": tshirtCutout, "l-ange-gardien-t-shirt-1": tshirtBlackCutout };
+const cutouts: Record<string, string> = {
+  "l-ange-gardien-t-shirt": tshirtCutout,
+  "l-ange-gardien-t-shirt-1": tshirtBlackCutout,
+  "avenue-montaigne-boxy-hoodie": hoodieBlackCutout,
+  "avenue-montaigne-sweatpants": sweatpantsBlackCutout,
+};
 
 /** Start page layout: full-screen hero, New Arrivals row, giant wordmark footer. */
 export function DropHome({ products, heroImage }: { products: ShopifyProduct[]; heroImage?: string }) {
