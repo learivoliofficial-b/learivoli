@@ -13,8 +13,8 @@ describe("size chart", () => {
     expect(getSizeChart({ title: "Avenue Montaigne Sweatpants", handle: "x" })).toBe(PANTS_SIZE_CHART);
   });
   it("hoodie M is 66 cm long, pants M 104 cm", () => {
-    expect(HOODIE_SIZE_CHART.rows[0].cm[1]).toBe(66);
-    expect(PANTS_SIZE_CHART.rows[0].cm[1]).toBe(104);
+    expect(HOODIE_SIZE_CHART.rows[0]?.cm[1]).toBe(66);
+    expect(PANTS_SIZE_CHART.rows[0]?.cm[1]).toBe(104);
   });
   it("uses the supplier's M measurements in cm", () => {
     const m = TSHIRT_SIZE_CHART.sizes.indexOf("M");
