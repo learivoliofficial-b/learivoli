@@ -3,9 +3,13 @@ import { POLICIES } from "@/components/policies";
 import { ChevronLeft, ChevronRight, Menu, Minus, Plus, Search, ShoppingBag, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import ugcChalet from "@/assets/ugc-chalet.webp";
-import ugcStreet from "@/assets/ugc-street.png";
-import ugcSubway from "@/assets/ugc-subway.png";
+import ugcBmw from "@/assets/ugc-bmw.webp";
+import ugcCafe from "@/assets/ugc-cafe.webp";
+import ugcChampagne from "@/assets/ugc-champagne.webp";
+import ugcDuffel from "@/assets/ugc-duffel.webp";
+import ugcGarden from "@/assets/ugc-garden.webp";
+import ugcPorsche from "@/assets/ugc-porsche.webp";
+import ugcVan from "@/assets/ugc-van.webp";
 import logo from "@/assets/biggerlog.png";
 import { Button } from "@/components/ui/button";
 import { formatMoney, type ShopifyProduct } from "@/lib/shopify";
@@ -13,9 +17,13 @@ import { useCartStore } from "@/stores/cart-store";
 import { freeShippingProgress } from "@/lib/shipping";
 
 const socialImages = [
-  { src: ugcStreet, alt: "Léa Rivoli Avenue Montaigne hoodie worn on the street in Paris" },
-  { src: ugcSubway, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the subway" },
-  { src: ugcChalet, alt: "Léa Rivoli Avenue Montaigne hoodie worn in the mountains" },
+  { src: ugcGarden, alt: "Léa Rivoli Avenue Montaigne hoodie and sweatpants worn in a garden" },
+  { src: ugcDuffel, alt: "Léa Rivoli Avenue Montaigne hoodie worn with a duffel bag" },
+  { src: ugcCafe, alt: "Léa Rivoli Avenue Montaigne hoodie worn at a Paris café" },
+  { src: ugcVan, alt: "Léa Rivoli Avenue Montaigne hoodie and sweatpants worn on the street" },
+  { src: ugcBmw, alt: "Léa Rivoli Avenue Montaigne hoodie worn next to a BMW" },
+  { src: ugcPorsche, alt: "Léa Rivoli Avenue Montaigne hoodie and sweatpants worn on a Porsche" },
+  { src: ugcChampagne, alt: "Léa Rivoli Avenue Montaigne hoodie worn with a glass of champagne" },
 ];
 
 export function SocialProofCarousel() {
@@ -45,7 +53,7 @@ export function SocialProofCarousel() {
         <div ref={trackRef} onScroll={updateActive} className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto">
           {socialImages.map((image) => (
             <figure key={image.src} className="w-[82%] shrink-0 snap-center px-1 sm:w-[46%] lg:w-[31%]">
-              <div className="aspect-[3/4] overflow-hidden bg-muted">
+              <div className="aspect-[2/3] overflow-hidden bg-muted">
                 <img src={image.src} alt={image.alt} loading="lazy" className="size-full object-cover" />
               </div>
             </figure>
