@@ -11,9 +11,9 @@ describe("free shipping", () => {
 const product = (handle: string) => ({ id: handle, handle, title: handle, images: { edges: [{ node: { url: `https://x/${handle}.jpg`, altText: null } }] }, priceRange: { minVariantPrice: { amount: "500", currencyCode: "SEK" } } }) as unknown as ShopifyProduct;
 
 describe("recommendations", () => {
-  it("never recommends the product being viewed and shows 4", () => {
+  it("never recommends the product being viewed and fills up with the remaining demo items", () => {
     const recs = buildRecommendations([product("a"), product("b")], "a");
-    expect(recs).toHaveLength(4);
+    expect(recs).toHaveLength(3);
     expect(recs.map((r) => r.handle)).not.toContain("a");
     expect(recs[0]!.handle).toBe("b");
   });
