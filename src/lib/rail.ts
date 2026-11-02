@@ -57,7 +57,6 @@ export function buildRailItems(products: ShopifyProduct[], minimum = 4): RailIte
     const { amount, currencyCode } = product.priceRange.minVariantPrice;
     return [{ id: product.id, title: product.title, price: formatMoney(amount, currencyCode), front, side, handle: product.handle }];
   });
-  const missing = Math.max(0, minimum - real.length);
-  const fill = Array.from({ length: missing }, (_, index): RailItem => ({ ...placeholders[index % placeholders.length]!, id: `placeholder-${index}` }));
-  return [...real, ...fill];
+  void minimum; void placeholders;
+  return real;
 }
