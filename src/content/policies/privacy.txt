@@ -76,7 +76,7 @@ Shopify and providers that operate our online store.
 
 Payment providers that process transactions.
 
-Print-on-demand, production, fulfilment and shipping providers.
+Production, fulfilment and shipping providers.
 
 Customer support, email, security, analytics or advertising providers, where used.
 
